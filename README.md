@@ -26,7 +26,6 @@
       const [savedResults, setSavedResults] = useState([]);
       const [error, setError] = useState('');
 
-      // Расширенная база данных (100 объектов)
       const kitchenDatabase = [
         { id: 1, name: "Классика Белая", length: 3.0, width: 2.0, height: 2.2, price: 150000, style: "Классический", material: "Дерево", color: "Белый", hasIsland: false, description: "Деревянная отделка, подходит для средних кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 2, name: "Модерн Серый", length: 2.5, width: 1.8, height: 2.0, price: 120000, style: "Модерн", material: "МДФ", color: "Серый", hasIsland: false, description: "Минимализм, идеален для небольших помещений.", image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=800&auto=format&fit=crop" },
@@ -74,7 +73,7 @@
         { id: 44, name: "Сканди Жёлтый", length: 2.8, width: 2.0, height: 2.2, price: 150000, style: "Скандинавский", material: "Дерево", color: "Жёлтый", hasIsland: false, description: "Жёлтые акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 45, name: "Премиум Бронза", length: 4.4, width: 3.4, height: 2.6, price: 340000, style: "Премиум", material: "Металл", color: "Бронзовый", hasIsland: true, description: "Бронзовая отделка, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 46, name: "Рустик Сосна", length: 3.3, width: 2.2, height: 2.3, price: 200000, style: "Рустик", material: "Сосна", color: "Коричневый", hasIsland: false, description: "Сосновая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 47, name: "Хай-тек Оранжевый", length: 2.9, width: 2.1, height: 2.1, price: 165000, style: "Хай-тек", material: "МДФ", color: "Оранжевый", hasIsland: true, description: "Оранжевый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 47, name: "Хай-тек Синий", length: 2.9, width: 2.1, height: 2.1, price: 155000, style: "Хай-тек", material: "МДФ", color: "Синий", hasIsland: true, description: "Синий глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 48, name: "Прованс Голубой", length: 3.2, width: 2.3, height: 2.3, price: 185000, style: "Прованс", material: "Дерево", color: "Голубой", hasIsland: false, description: "Голубые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 49, name: "Минимал Красный", length: 2.5, width: 1.8, height: 2.0, price: 125000, style: "Минимализм", material: "МДФ", color: "Красный", hasIsland: false, description: "Красный минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 50, name: "Эко Зелёный", length: 3.6, width: 2.4, height: 2.5, price: 260000, style: "Эко", material: "Дерево", color: "Зелёный", hasIsland: true, description: "Экологичный зелёный, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
@@ -84,37 +83,37 @@
         { id: 54, name: "Сканди Оранжевый", length: 2.8, width: 2.0, height: 2.2, price: 155000, style: "Скандинавский", material: "Дерево", color: "Оранжевый", hasIsland: false, description: "Оранжевые акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 55, name: "Премиум Алый", length: 4.6, width: 3.6, height: 2.7, price: 360000, style: "Премиум", material: "Мрамор", color: "Алый", hasIsland: true, description: "Алый мрамор, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 56, name: "Рустик Бук", length: 3.4, width: 2.2, height: 2.3, price: 205000, style: "Рустик", material: "Бук", color: "Коричневый", hasIsland: false, description: "Буковая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 57, name: "Хай-тек Оранжевый", length: 3.0, width: 2.1, height: 2.1, price: 165000, style: "Хай-тек", material: "MDF", color: "Оранжевый", hasIsland: true, description: "Оранжевый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 57, name: "Хай-тек Оранжевый", length: 3.0, width: 2.1, height: 2.1, price: 165000, style: "Хай-тек", material: "МДФ", color: "Оранжевый", hasIsland: true, description: "Оранжевый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 58, name: "Прованс Фиолетовый", length: 3.3, width: 2.4, height: 2.3, price: 190000, style: "Прованс", material: "Дерево", color: "Фиолетовый", hasIsland: false, description: "Фиолетовые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 59, name: "Минимал Фиолетовый", length: 2.6, width: 1.8, height: 2.0, price: 130000, style: "Минимализм", material: "MDF", color: "Фиолетовый", hasIsland: false, description: "Фиолетовый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 59, name: "Минимал Фиолетовый", length: 2.6, width: 1.8, height: 2.0, price: 130000, style: "Минимализм", material: "МДФ", color: "Фиолетовый", hasIsland: false, description: "Фиолетовый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 60, name: "Эко Оливковый", length: 3.7, width: 2.5, height: 2.5, price: 270000, style: "Эко", material: "Дерево", color: "Оливковый", hasIsland: true, description: "Экологичный оливковый, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 61, name: "Классика Бронза", length: 3.9, width: 2.6, height: 2.4, price: 215000, style: "Классический", material: "Металл", color: "Бронзовый", hasIsland: false, description: "Бронзовая классика, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 62, name: "Модерн Фиолетовый", length: 2.8, width: 2.0, height: 2.1, price: 150000, style: "Модерн", material: "MDF", color: "Фиолетовый", hasIsland: false, description: "Фиолетовый модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 62, name: "Модерн Фиолетовый", length: 2.8, width: 2.0, height: 2.1, price: 150000, style: "Модерн", material: "МДФ", color: "Фиолетовый", hasIsland: false, description: "Фиолетовый модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 63, name: "Лофт Стекло", length: 4.1, width: 3.0, height: 2.6, price: 260000, style: "Лофт", material: "Стекло", color: "Прозрачный", hasIsland: true, description: "Стеклянная отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 64, name: "Сканди Красный", length: 2.9, width: 2.1, height: 2.2, price: 160000, style: "Скандинавский", material: "Дерево", color: "Красный", hasIsland: false, description: "Красные акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 65, name: "Премиум Изумруд", length: 4.7, width: 3.7, height: 2.7, price: 370000, style: "Премиум", material: "Мрамор", color: "Изумрудный", hasIsland: true, description: "Изумрудный мрамор, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 66, name: "Рустик Ясень", length: 3.5, width: 2.3, height: 2.3, price: 210000, style: "Рустик", material: "Ясень", color: "Коричневый", hasIsland: false, description: "Ясеневая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 67, name: "Хай-тек Розовый", length: 3.1, width: 2.2, height: 2.1, price: 170000, style: "Хай-тек", material: "MDF", color: "Розовый", hasIsland: true, description: "Розовый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 67, name: "Хай-тек Розовый", length: 3.1, width: 2.2, height: 2.1, price: 170000, style: "Хай-тек", material: "МДФ", color: "Розовый", hasIsland: true, description: "Розовый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 68, name: "Прованс Оранжевый", length: 3.4, width: 2.5, height: 2.3, price: 195000, style: "Прованс", material: "Дерево", color: "Оранжевый", hasIsland: false, description: "Оранжевые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 69, name: "Минимал Зелёный", length: 2.7, width: 1.9, height: 2.0, price: 135000, style: "Минимализм", material: "MDF", color: "Зелёный", hasIsland: false, description: "Зелёный минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 69, name: "Минимал Зелёный", length: 2.7, width: 1.9, height: 2.0, price: 135000, style: "Минимализм", material: "МДФ", color: "Зелёный", hasIsland: false, description: "Зелёный минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 70, name: "Эко Синий", length: 3.8, width: 2.6, height: 2.5, price: 280000, style: "Эко", material: "Дерево", color: "Синий", hasIsland: true, description: "Экологичный синий, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 71, name: "Классика Бордо", length: 3.6, width: 2.4, height: 2.3, price: 220000, style: "Классический", material: "Дерево", color: "Бордовый", hasIsland: false, description: "Бордовый классический стиль, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 72, name: "Модерн Бирюзовый", length: 2.8, width: 2.0, height: 2.1, price: 155000, style: "Модерн", material: "MDF", color: "Бирюзовый", hasIsland: false, description: "Бирюзовый модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 72, name: "Модерн Бирюзовый", length: 2.8, width: 2.0, height: 2.1, price: 155000, style: "Модерн", material: "МДФ", color: "Бирюзовый", hasIsland: false, description: "Бирюзовый модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 73, name: "Лофт Гранит", length: 4.2, width: 3.1, height: 2.6, price: 270000, style: "Лофт", material: "Гранит", color: "Серый", hasIsland: true, description: "Гранитная отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 74, name: "Сканди Фиолетовый", length: 3.0, width: 2.2, height: 2.2, price: 165000, style: "Скандинавский", material: "Дерево", color: "Фиолетовый", hasIsland: false, description: "Фиолетовые акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 75, name: "Премиум Сапфир", length: 4.8, width: 3.8, height: 2.7, price: 380000, style: "Премиум", material: "Мрамор", color: "Сапфировый", hasIsland: true, description: "Сапфировый мрамор, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 76, name: "Рустик Клён", length: 3.6, width: 2.3, height: 2.3, price: 215000, style: "Рустик", material: "Клён", color: "Коричневый", hasIsland: false, description: "Клёновая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 77, name: "Хай-тек Бирюзовый", length: 3.2, width: 2.2, height: 2.1, price: 175000, style: "Хай-тек", material: "MDF", color: "Бирюзовый", hasIsland: true, description: "Бирюзовый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 77, name: "Хай-тек Бирюзовый", length: 3.2, width: 2.2, height: 2.1, price: 175000, style: "Хай-тек", material: "МДФ", color: "Бирюзовый", hasIsland: true, description: "Бирюзовый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 78, name: "Прованс Жёлтый", length: 3.5, width: 2.5, height: 2.3, price: 200000, style: "Прованс", material: "Дерево", color: "Жёлтый", hasIsland: false, description: "Жёлтые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 79, name: "Минимал Бордо", length: 2.8, width: 1.9, height: 2.0, price: 140000, style: "Минимализм", material: "MDF", color: "Бордовый", hasIsland: false, description: "Бордовый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 79, name: "Минимал Бордо", length: 2.8, width: 1.9, height: 2.0, price: 140000, style: "Минимализм", material: "МДФ", color: "Бордовый", hasIsland: false, description: "Бордовый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 80, name: "Эко Бордо", length: 3.9, width: 2.7, height: 2.5, price: 290000, style: "Эко", material: "Дерево", color: "Бордовый", hasIsland: true, description: "Экологичный бордовый, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 81, name: "Классика Оливковый", length: 4.0, width: 2.7, height: 2.4, price: 230000, style: "Классический", material: "Дерево", color: "Оливковый", hasIsland: false, description: "Оливковый классический стиль, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 82, name: "Модерн Сапфировый", length: 2.9, width: 2.1, height: 2.1, price: 160000, style: "Модерн", material: "MDF", color: "Сапфировый", hasIsland: false, description: "Сапфировый модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 82, name: "Модерн Сапфировый", length: 2.9, width: 2.1, height: 2.1, price: 160000, style: "Модерн", material: "МДФ", color: "Сапфировый", hasIsland: false, description: "Сапфировый модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 83, name: "Лофт Медь", length: 4.3, width: 3.2, height: 2.6, price: 280000, style: "Лофт", material: "Медь", color: "Медный", hasIsland: true, description: "Медная отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 84, name: "Сканди Бордо", length: 3.1, width: 2.2, height: 2.2, price: 170000, style: "Скандинавский", material: "Дерево", color: "Бордовый", hasIsland: false, description: "Бордовые акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 85, name: "Премиум Оникс", length: 4.9, width: 3.9, height: 2.7, price: 390000, style: "Премиум", material: "Мрамор", color: "Чёрный", hasIsland: true, description: "Ониксовая отделка, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 86, name: "Рустик Вишня", length: 3.7, width: 2.4, height: 2.3, price: 220000, style: "Рустик", material: "Вишня", color: "Коричневый", hasIsland: false, description: "Вишнёвая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 87, name: "Хай-тек Сапфировый", length: 3.3, width: 2.3, height: 2.1, price: 180000, style: "Хай-тек", material: "MDF", color: "Сапфировый", hasIsland: true, description: "Сапфировый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+        { id: 87, name: "Хай-тек Сапфировый", length: 3.3, width: 2.3, height: 2.1, price: 180000, style: "Хай-тек", material: "МДФ", color: "Сапфировый", hasIsland: true, description: "Сапфировый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 88, name: "Прованс Бирюзовый", length: 3.6, width: 2.6, height: 2.3, price: 205000, style: "Прованс", material: "Дерево", color: "Бирюзовый", hasIsland: false, description: "Бирюзовые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 89, name: "Минимал Оливковый", length: 2.9, width: 2.0, height: 2.0, price: 145000, style: "Минимализм", material: "MDF", color: "Оливковый", hasIsland: false, description: "Оливковый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
         { id: 90, name: "Эко Жёлтый", length: 4.0, width: 2.8, height: 2.5, price: 300000, style: "Эко", material: "Дерево", color: "Жёлтый", hasIsland: true, description: "Экологичный жёлтый, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
@@ -131,7 +130,7 @@
       ];
 
       const styles = ['Классический', 'Модерн', 'Лофт', 'Скандинавский', 'Премиум', 'Рустик', 'Хай-тек', 'Прованс', 'Минимализм', 'Эко'];
-      const materials = ['Дерево', 'МДФ', 'Мрамор', 'Металл', 'Бетон', 'Орех', 'Кирпич', 'Сталь', 'Камень', 'Стекло', 'Дуб', 'Кедр', 'Сосна', 'Бук', 'Ясень', 'Гранит', 'Медь', 'Оникс', 'Вишня', 'Клён', 'Лиственница'];
+      const materials = ['Дерево', 'MDF', 'Мрамор', 'Металл', 'Бетон', 'Орех', 'Кирпич', 'Сталь', 'Камень', 'Стекло', 'Дуб', 'Кедр', 'Сосна', 'Бук', 'Ясень', 'Гранит', 'Медь', 'Оникс', 'Вишня', 'Клён', 'Лиственница'];
       const colors = ['Белый', 'Серый', 'Чёрный', 'Коричневый', 'Пастель', 'Синий', 'Золотой', 'Кремовый', 'Красный', 'Зелёный', 'Лавандовый', 'Голубой', 'Розовый', 'Жёлтый', 'Оранжевый', 'Фиолетовый', 'Серебристый', 'Бронзовый', 'Алый', 'Изумрудный', 'Тёмно-коричневый', 'Прозрачный', 'Бордовый', 'Бирюзовый', 'Сапфировый', 'Оливковый', 'Индиго', 'Лаймовый', 'Медный', 'Золотистый'];
 
       useEffect(() => {
@@ -245,141 +244,165 @@
       };
 
       return (
-        <div class="max-w-5xl w-full bg-gray-900 shadow-lg rounded-xl p-6 border border-gray-700">
-          <h1 class="text-4xl font-bold text-center text-white mb-8 tracking-wide">Конфигуратор кухонной мебели</h1>
+        <div className="max-w-5xl w-full bg-gray-900 shadow-lg rounded-xl p-6 border border-gray-700">
+          <h1 className="text-3xl font-bold text-center text-white mb-6">Конфигуратор кухонной мебели</h1>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label class="block text-gray-300 mb-2 text-lg">Длина помещения (м):</label>
+              <label className="block text-gray-300 mb-2">Длина помещения (м):</label>
               <input
                 type="number"
                 value={roomParams.length}
                 onChange={(e) => handleInputChange(e, 'length')}
-                class="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например, 3.5"
                 step="0.1"
-                min="0"
               />
             </div>
             <div>
-              <label class="block text-gray-300 mb-2 text-lg">Ширина помещения (м):</label>
+              <label className="block text-gray-300 mb-2">Ширина помещения (м):</label>
               <input
                 type="number"
                 value={roomParams.width}
                 onChange={(e) => handleInputChange(e, 'width')}
-                class="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например, 2.0"
                 step="0.1"
-                min="0"
               />
             </div>
             <div>
-              <label class="block text-gray-300 mb-2 text-lg">Высота помещения (м):</label>
+              <label className="block text-gray-300 mb-2">Высота помещения (м):</label>
               <input
                 type="number"
                 value={roomParams.height}
                 onChange={(e) => handleInputChange(e, 'height')}
-                class="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например, 2.4"
                 step="0.1"
-                min="0"
               />
             </div>
             <div>
-              <label class="block text-gray-300 mb-2 text-lg">Бюджет (руб):</label>
+              <label className="block text-gray-300 mb-2">Бюджет (руб):</label>
               <input
                 type="number"
                 value={budget}
                 onChange={(e) => handleInputChange(e, 'budget')}
-                class="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например, 150000"
                 step="1000"
-                min="0"
               />
             </div>
             <div>
-              <label class="block text-gray-300 mb-2 text-lg">Стиль:</label>
+              <label className="block text-gray-300 mb-2">Стиль:</label>
               <select
                 value={style}
                 onChange={(e) => handleInputChange(e, 'style')}
-                class="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="" class="bg-gray-800">Выберите стиль</option>
-                {styles.map(s => <option key={s} value={s} class="bg-gray-800">{s}</option>)}
+                <option value="">Выберите стиль</option>
+                {styles.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
-              <label class="block text-gray-300 mb-2 text-lg">Материал:</label>
+              <label className="block text-gray-300 mb-2">Материал:</label>
               <select
                 value={material}
                 onChange={(e) => handleInputChange(e, 'material')}
-                class="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="" class="bg-gray-800">Выберите материал</option>
-                {materials.map(m => <option key={m} value={m} class="bg-gray-800">{m}</option>)}
+                <option value="">Выберите материал</option>
+                {materials.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
             <div>
-              <label class="block text-gray-300 mb-2 text-lg">Цвет:</label>
+              <label className="block text-gray-300 mb-2">Цвет:</label>
               <select
                 value={color}
                 onChange={(e) => handleInputChange(e, 'color')}
-                class="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="" class="bg-gray-800">Выберите цвет</option>
-                {colors.map(c => <option key={c} value={c} class="bg-gray-800">{c}</option>)}
+                <option value="">Выберите цвет</option>
+                {colors.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label class="block text-gray-300 mb-2 text-lg">Наличие острова:</label>
+              <label className="block text-gray-300 mb-2">Наличие острова:</label>
               <select
                 value={hasIsland ? 'yes' : 'no'}
                 onChange={(e) => handleInputChange(e, 'hasIsland')}
-                class="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="" class="bg-gray-800">Не важно</option>
-                <option value="yes" class="bg-gray-800">Да</option>
-                <option value="no" class="bg-gray-800">Нет</option>
+                <option value="">Не важно</option>
+                <option value="yes">Да</option>
+                <option value="no">Нет</option>
               </select>
             </div>
           </div>
 
-          <div class="text-center mb-8 space-x-4">
+          <div className="text-center mb-6 space-x-4">
             <button
               onClick={findBestOptions}
-              class="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-8 py-3 rounded-lg hover:from-blue-700 hover:to-blue-500 transition duration-300 shadow-lg"
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-200"
             >
               Подобрать варианты
             </button>
             <button
               onClick={saveResults}
               disabled={results.length === 0}
-              class="bg-gradient-to-r from-green-600 to-green-400 text-white px-8 py-3 rounded-lg hover:from-green-700 hover:to-green-500 transition duration-300 shadow-lg disabled:from-gray-600 disabled:to-gray-500"
+              className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition duration-200 disabled:bg-gray-400"
             >
               Сохранить результаты
             </button>
             <button
               onClick={exportToPDF}
               disabled={results.length === 0}
-              class="bg-gradient-to-r from-purple-600 to-purple-400 text-white px-8 py-3 rounded-lg hover:from-purple-700 hover:to-purple-500 transition duration-300 shadow-lg disabled:from-gray-600 disabled:to-gray-500"
+              className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition duration-200 disabled:bg-gray-400"
             >
               Экспорт в PDF
             </button>
           </div>
 
           {error && (
-            <div class="text-red-400 text-center mb-8 text-lg">{error}</div>
+            <div className="text-red-400 text-center mb-6">{error}</div>
           )}
 
           {results.length > 0 && (
             <div>
-              <h2 class="text-2xl font-semibold text-center text-white mb-6">Рекомендуемые варианты:</h2>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <h2 className="text-2xl font-semibold text-center text-white mb-4">Рекомендуемые варианты:</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {results.map(option => (
-                  <div key={option.id} class="bg-gray-800 p-5 rounded-xl shadow-lg border border-gray-700 hover:shadow-xl hover:border-blue-500 transition duration-300">
-                    <img src={option.image} alt={option.name} class="w-full h-48 object-cover rounded-lg mb-4 border border-gray-600" />
-                    <h3 class="text-xl font-semibold text-white mb-2">{option.name}</h3>
-                    <p class="text-gray-300 mb-2">Цена: {option.price} руб.</p>
-                    <p class="text-gray-300 mb-2">Размеры: {option.length} x {option.width} x {option.height} м</p>
-                    <p class="text-gray-300 mb-2">Стиль: {option.style}</p>
-                    <p class="text-gray
+                  <div key={option.id} className="bg-gray-800 p-4 rounded-lg shadow">
+                    <img src={option.image} alt={option.name} className="w-full h-48 object-cover rounded-lg mb-4 border border-gray-600" />
+                    <h3 className="text-xl font-bold text-white">{option.name}</h3>
+                    <p className="text-gray-300">Цена: {option.price} руб.</p>
+                    <p className="text-gray-300">Размеры: {option.length} x {option.width} x {option.height} м</p>
+                    <p className="text-gray-300">Стиль: {option.style}</p>
+                    <p className="text-gray-300">Материал: {option.material}</p>
+                    <p className="text-gray-300">Цвет: {option.color}</p>
+                    <p className="text-gray-300">Остров: {option.hasIsland ? 'Да' : 'Нет'}</p>
+                    <p className="text-gray-300 mt-2">{option.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {savedResults.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-2xl font-semibold text-center text-white mb-4">Сохранённые результаты:</h2>
+              <ul className="list-disc pl-5">
+                {savedResults.map((saved, index) => (
+                  <li key={saved.id} className="mb-2 text-gray-300">
+                    {`Параметры: Длина ${saved.params.length}m, Ширина ${saved.params.width}m, Высота ${saved.params.height}m, Бюджет ${saved.params.budget} руб., Стиль: ${saved.params.style || 'Не указано'}, Материал: ${saved.params.material || 'Не указано'}, Цвет: ${saved.params.color || 'Не указано'}, Остров: ${saved.params.hasIsland ? 'Да' : 'Нет'} — ${saved.timestamp}`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
