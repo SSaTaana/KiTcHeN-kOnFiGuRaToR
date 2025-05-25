@@ -1,1 +1,249 @@
-# kitchen-configurator
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Конфигуратор кухонной мебели</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const App = () => {
+      // Состояние для параметров комнаты, бюджета и результатов
+      const [roomParams, setRoomParams] = useState({ length: '', width: '', height: '' });
+      const [budget, setBudget] = useState('');
+      const [results, setResults] = useState([]);
+      const [savedResults, setSavedResults] = useState([]);
+      const [error, setError] = useState('');
+
+      // Обширная база данных кухонной мебели
+      const kitchenDatabase = [
+        { id: 1, name: "Классика Белая", length: 3.0, width: 2.0, height: 2.2, price: 150000, style: "Классический", description: "Деревянная отделка, подходит для средних кухонь." },
+        { id: 2, name: "Модерн Серый", length: 2.5, width: 1.8, height: 2.0, price: 120000, style: "Модерн", description: "Минимализм, идеален для небольших помещений." },
+        { id: 3, name: "Лофт Металл", length: 3.5, width: 2.5, height: 2.4, price: 200000, style: "Лофт", description: "Металлические элементы, для просторных кухонь." },
+        { id: 4, name: "Сканди Светлый", length: 2.8, width: 2.0, height: 2.1, price: 130000, style: "Скандинавский", description: "Светлые тона, уютный дизайн." },
+        { id: 5, name: "Премиум Мрамор", length: 4.0, width: 3.0, height: 2.5, price: 300000, style: "Премиум", description: "Мраморная отделка, для больших кухонь." },
+        { id: 6, name: "Рустик Дуб", length: 3.2, width: 2.2, height: 2.3, price: 180000, style: "Рустик", description: "Дубовая текстура, для теплых интерьеров." },
+        { id: 7, name: "Хай-тек Черный", length: 2.7, width: 1.9, height: 2.1, price: 140000, style: "Хай-тек", description: "Глянцевый черный, для современных кухонь." },
+        { id: 8, name: "Прованс Пастель", length: 3.1, width: 2.1, height: 2.2, price: 160000, style: "Прованс", description: "Пастельные тона, для романтичных интерьеров." },
+        { id: 9, name: "Минимал Синий", length: 2.6, width: 1.7, height: 2.0, price: 110000, style: "Минимализм", description: "Синий акцент, компактный дизайн." },
+        { id: 10, name: "Эко Дерево", length: 3.4, width: 2.3, height: 2.4, price: 220000, style: "Эко", description: "Естественные материалы, экологичный выбор." },
+      ];
+
+      // Загрузка сохранённых результатов из localStorage при монтировании
+      useEffect(() => {
+        const saved = localStorage.getItem('savedKitchenResults');
+        if (saved) setSavedResults(JSON.parse(saved));
+      }, []);
+
+      // Обработчик изменения полей ввода
+      const handleInputChange = (e, field) => {
+        const value = e.target.value;
+        if (field === 'budget') {
+          setBudget(value);
+        } else {
+          setRoomParams({ ...roomParams, [field]: value });
+        }
+        setError('');
+      };
+
+      // Функция подбора вариантов
+      const findBestOptions = () => {
+        const { length, width, height } = roomParams;
+        const budgetValue = parseFloat(budget);
+
+        if (!length || !width || !height || !budget) {
+          setError('Пожалуйста, заполните все поля.');
+          setResults([]);
+          return;
+        }
+
+        if (isNaN(length) || isNaN(width) || isNaN(height) || isNaN(budgetValue) || length <= 0 || width <= 0 || height <= 0 || budgetValue <= 0) {
+          setError('Введите корректные числовые значения больше 0.');
+          setResults([]);
+          return;
+        }
+
+        const filteredOptions = kitchenDatabase.filter(option => {
+          return (
+            option.length <= parseFloat(length) &&
+            option.width <= parseFloat(width) &&
+            option.height <= parseFloat(height) &&
+            option.price <= budgetValue
+          );
+        });
+
+        const sortedOptions = filteredOptions.sort((a, b) => b.price - a.price).slice(0, 3);
+        if (sortedOptions.length === 0) {
+          setError('Не найдено подходящих вариантов для заданных параметров.');
+          setResults([]);
+        } else {
+          setResults(sortedOptions);
+          setError('');
+        }
+      };
+
+      // Сохранение результатов
+      const saveResults = () => {
+        if (results.length > 0) {
+          const newSaved = [...savedResults, { id: Date.now(), data: results, params: { ...roomParams, budget }, timestamp: new Date().toLocaleString() }];
+          setSavedResults(newSaved);
+          localStorage.setItem('savedKitchenResults', JSON.stringify(newSaved));
+          alert('Результаты сохранены!');
+        }
+      };
+
+      // Экспорт в PDF
+      const exportToPDF = () => {
+        if (results.length > 0) {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          doc.setFontSize(16);
+          doc.text('Рекомендуемые варианты кухонной мебели', 10, 10);
+          doc.setFontSize(12);
+          doc.text(`Параметры комнаты: Длина ${roomParams.length}m, Ширина ${roomParams.width}m, Высота ${roomParams.height}m, Бюджет: ${budget} руб.`, 10, 20);
+
+          let yOffset = 30;
+          results.forEach((option, index) => {
+            doc.text(`${index + 1}. ${option.name}`, 10, yOffset);
+            doc.text(`Цена: ${option.price} руб.`, 10, yOffset + 10);
+            doc.text(`Размеры: ${option.length} x ${option.width} x ${option.height} м`, 10, yOffset + 20);
+            doc.text(`Описание: ${option.description}`, 10, yOffset + 30);
+            yOffset += 40;
+            if (yOffset > 280) {
+              doc.addPage();
+              yOffset = 10;
+            }
+          });
+
+          doc.save(`kitchen_config_${new Date().toISOString().split('T')[0]}.pdf`);
+          alert('PDF-файл сохранён!');
+        }
+      };
+
+      return (
+        <div class="max-w-4xl w-full bg-white shadow-lg rounded-lg p-6">
+          <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Конфигуратор кухонной мебели</h1>
+          
+          {/* Форма ввода параметров */}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label class="block text-gray-700 mb-2">Длина помещения (м):</label>
+              <input
+                type="number"
+                value={roomParams.length}
+                onChange={(e) => handleInputChange(e, 'length')}
+                class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Например, 3.5"
+                step="0.1"
+              />
+            </div>
+            <div>
+              <label class="block text-gray-700 mb-2">Ширина помещения (м):</label>
+              <input
+                type="number"
+                value={roomParams.width}
+                onChange={(e) => handleInputChange(e, 'width')}
+                class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Например, 2.0"
+                step="0.1"
+              />
+            </div>
+            <div>
+              <label class="block text-gray-700 mb-2">Высота помещения (м):</label>
+              <input
+                type="number"
+                value={roomParams.height}
+                onChange={(e) => handleInputChange(e, 'height')}
+                class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Например, 2.4"
+                step="0.1"
+              />
+            </div>
+            <div>
+              <label class="block text-gray-700 mb-2">Бюджет (руб):</label>
+              <input
+                type="number"
+                value={budget}
+                onChange={(e) => handleInputChange(e, 'budget')}
+                class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Например, 150000"
+                step="1000"
+              />
+            </div>
+          </div>
+
+          {/* Кнопки подбора, сохранения и экспорта */}
+          <div class="text-center mb-6 space-x-4">
+            <button
+              onClick={findBestOptions}
+              class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-200"
+            >
+              Подобрать варианты
+            </button>
+            <button
+              onClick={saveResults}
+              disabled={results.length === 0}
+              class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition duration-200 disabled:bg-gray-400"
+            >
+              Сохранить результаты
+            </button>
+            <button
+              onClick={exportToPDF}
+              disabled={results.length === 0}
+              class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition duration-200 disabled:bg-gray-400"
+            >
+              Экспорт в PDF
+            </button>
+          </div>
+
+          {/* Вывод ошибки */}
+          {error && (
+            <div class="text-red-600 text-center mb-6">{error}</div>
+          )}
+
+          {/* Вывод результатов */}
+          {results.length > 0 && (
+            <div>
+              <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Рекомендуемые варианты:</h2>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {results.map(option => (
+                  <div key={option.id} class="bg-gray-50 p-4 rounded-lg shadow">
+                    <h3 class="text-xl font-bold text-gray-800">{option.name}</h3>
+                    <p class="text-gray-600">Цена: {option.price} руб.</p>
+                    <p class="text-gray-600">Размеры: {option.length} x {option.width} x {option.height} м</p>
+                    <p class="text-gray-600 mt-2">{option.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Вывод сохранённых результатов */}
+          {savedResults.length > 0 && (
+            <div class="mt-6">
+              <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Сохранённые результаты:</h2>
+              <ul class="list-disc pl-5">
+                {savedResults.map((saved, index) => (
+                  <li key={saved.id} class="mb-2">
+                    {`Параметры: Длина ${saved.params.length}m, Ширина ${saved.params.width}m, Высота ${saved.params.height}m, Бюджет ${saved.params.budget} руб. — ${saved.timestamp}`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
