@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -9,8 +9,23 @@
   <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      background-image: url('https://cdn.pixabay.com/photo/2025/05/25/17/52/kitchen-8435523_1280.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+    .container-overlay {
+      background-color: rgba(0, 0, 0, 0.85);
+      border-radius: 1rem;
+      padding: 1.5rem;
+    }
+  </style>
 </head>
-<body class="bg-black min-h-screen flex flex-col items-center justify-center p-4">
+<body class="flex flex-col items-center justify-center p-4">
   <div id="root"></div>
   <script type="text/babel">
     const { useState, useEffect } = React;
@@ -244,7 +259,7 @@
       };
 
       return (
-        <div className="max-w-5xl w-full bg-gray-900 shadow-lg rounded-xl p-6 border border-gray-700">
+        <div className="max-w-5xl w-full container-overlay shadow-lg border border-gray-700">
           <h1 className="text-3xl font-bold text-center text-white mb-6">Конфигуратор кухонной мебели</h1>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -257,6 +272,7 @@
                 className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например, 3.5"
                 step="0.1"
+                min="0"
               />
             </div>
             <div>
@@ -268,6 +284,7 @@
                 className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например, 2.0"
                 step="0.1"
+                min="0"
               />
             </div>
             <div>
@@ -279,6 +296,7 @@
                 className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например, 2.4"
                 step="0.1"
+                min="0"
               />
             </div>
             <div>
@@ -290,6 +308,7 @@
                 className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например, 150000"
                 step="1000"
+                min="0"
               />
             </div>
             <div>
@@ -391,18 +410,4 @@
             <div className="mt-6">
               <h2 className="text-2xl font-semibold text-center text-white mb-4">Сохранённые результаты:</h2>
               <ul className="list-disc pl-5">
-                {savedResults.map((saved, index) => (
-                  <li key={saved.id} className="mb-2 text-gray-300">
-                    {`Параметры: Длина ${saved.params.length}m, Ширина ${saved.params.width}m, Высота ${saved.params.height}m, Бюджет ${saved.params.budget} руб., Стиль: ${saved.params.style || 'Не указано'}, Материал: ${saved.params.material || 'Не указано'}, Цвет: ${saved.params.color || 'Не указано'}, Остров: ${saved.params.hasIsland ? 'Да' : 'Нет'} — ${saved.timestamp}`}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      );
-    };
-
-    ReactDOM.render(<App />, document.getElementById('root'));
-  </script>
-</body>
+                {savedResults.map((saved, index)
