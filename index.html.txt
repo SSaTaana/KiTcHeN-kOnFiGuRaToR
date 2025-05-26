@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Конфигуратор кухонной мебели</title>
+  <title>Конфигуратор мебельной фурнитуры</title>
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
@@ -13,406 +13,346 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
   <style>
     body {
-      background-image: url('https://cdn.pixabay.com/photo/2025/05/25/12/17/kitchen-interior-8435524_1280.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
+      background: linear-gradient(135deg, #1a1a1a, #000000);
       min-height: 100vh;
+      font-family: 'Arial', sans-serif;
+      color: #ffffff;
+      position: relative;
+      overflow-x: hidden;
     }
     .container-overlay {
-      background-color: rgba(0, 0, 0, 0.85);
-      border-radius: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 1.5rem;
       padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      max-width: 80rem;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .edge-animation {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 50px;
+      background: linear-gradient(90deg, rgba(79, 70, 229, 0.2), transparent);
+      animation: edgeGlow 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .edge-animation.left {
+      left: 0;
+    }
+    .edge-animation.right {
+      right: 0;
+      background: linear-gradient(270deg, rgba(79, 70, 229, 0.2), transparent);
+    }
+    @keyframes edgeGlow {
+      0% { opacity: 0.3; transform: translateY(-10%); }
+      50% { opacity: 0.8; transform: translateY(10%); }
+      100% { opacity: 0.3; transform: translateY(-10%); }
+    }
+    @media (max-width: 640px) {
+      .container-overlay {
+        padding: 1rem;
+        margin: 0 0.5rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+      }
+      h2 {
+        font-size: 1.25rem;
+      }
+      .grid-cols-3 {
+        grid-template-columns: 1fr;
+      }
+      .edge-animation {
+        width: 20px;
+      }
     }
   </style>
 </head>
-<body class="flex flex-col items-center justify-center p-4">
+<body className="flex flex-col items-center justify-center min-h-screen p-4">
+  <div className="edge-animation left"></div>
+  <div className="edge-animation right"></div>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState } = React;
 
     const App = () => {
-      const [roomParams, setRoomParams] = useState({ length: '', width: '', height: '' });
-      const [budget, setBudget] = useState('');
-      const [style, setStyle] = useState('');
-      const [material, setMaterial] = useState('');
-      const [color, setColor] = useState('');
-      const [hasIsland, setHasIsland] = useState('');
+      const [type, setType] = useState('');
+      const [mechanism, setMechanism] = useState('');
+      const [specificOption, setSpecificOption] = useState('');
+      const [brand, setBrand] = useState('');
       const [results, setResults] = useState([]);
       const [savedResults, setSavedResults] = useState([]);
       const [error, setError] = useState('');
 
-      const kitchenDatabase = [
-        { id: 1, name: "Классика Белая", length: 3.0, width: 2.0, height: 2.2, price: 150000, style: "Классический", material: "Дерево", color: "Белый", hasIsland: false, description: "Деревянная отделка, подходит для средних кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 2, name: "Модерн Серый", length: 2.5, width: 1.8, height: 2.0, price: 120000, style: "Модерн", material: "MDF", color: "Серый", hasIsland: false, description: "Минимализм, идеален для небольших помещений.", image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=800&auto=format&fit=crop" },
-        { id: 3, name: "Лофт Металл", length: 3.5, width: 2.5, height: 2.4, price: 200000, style: "Лофт", material: "Металл", color: "Чёрный", hasIsland: true, description: "Металлические элементы, для просторных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 4, name: "Сканди Светлый", length: 2.8, width: 2.0, height: 2.1, price: 130000, style: "Скандинавский", material: "Дерево", color: "Белый", hasIsland: false, description: "Светлые тона, уютный дизайн.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 5, name: "Премиум Мрамор", length: 4.0, width: 3.0, height: 2.5, price: 300000, style: "Премиум", material: "Мрамор", color: "Белый", hasIsland: true, description: "Мраморная отделка, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 6, name: "Рустик Дуб", length: 3.2, width: 2.2, height: 2.3, price: 180000, style: "Рустик", material: "Дуб", color: "Коричневый", hasIsland: false, description: "Дубовая текстура, для теплых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 7, name: "Хай-тек Черный", length: 2.7, width: 1.9, height: 2.1, price: 140000, style: "Хай-тек", material: "MDF", color: "Чёрный", hasIsland: false, description: "Глянцевый черный, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 8, name: "Прованс Пастель", length: 3.1, width: 2.1, height: 2.2, price: 160000, style: "Прованс", material: "Дерево", color: "Пастель", hasIsland: false, description: "Пастельные тона, для романтичных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 9, name: "Минимал Синий", length: 2.6, width: 1.7, height: 2.0, price: 110000, style: "Минимализм", material: "MDF", color: "Синий", hasIsland: false, description: "Синий акцент, компактный дизайн.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 10, name: "Эко Дерево", length: 3.4, width: 2.3, height: 2.4, price: 220000, style: "Эко", material: "Дерево", color: "Коричневый", hasIsland: true, description: "Естественные материалы, экологичный выбор.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 11, name: "Классика Кремовая", length: 3.3, width: 2.1, height: 2.3, price: 170000, style: "Классический", material: "Дерево", color: "Кремовый", hasIsland: false, description: "Кремовые оттенки, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 12, name: "Модерн Белый", length: 2.9, width: 2.0, height: 2.2, price: 125000, style: "Модерн", material: "MDF", color: "Белый", hasIsland: false, description: "Белый минимализм, для светлых кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 13, name: "Лофт Бетон", length: 3.6, width: 2.6, height: 2.5, price: 210000, style: "Лофт", material: "Бетон", color: "Серый", hasIsland: true, description: "Бетонная отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 14, name: "Сканди Серый", length: 2.7, width: 1.9, height: 2.1, price: 135000, style: "Скандинавский", material: "Дерево", color: "Серый", hasIsland: false, description: "Серые акценты, для скандинавских интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 15, name: "Премиум Черный", length: 4.2, width: 3.2, height: 2.6, price: 320000, style: "Премиум", material: "Мрамор", color: "Чёрный", hasIsland: true, description: "Чёрный мрамор, для роскошных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 16, name: "Рустик Орех", length: 3.1, width: 2.0, height: 2.2, price: 175000, style: "Рустик", material: "Орех", color: "Коричневый", hasIsland: false, description: "Ореховая отделка, для деревенского стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 17, name: "Хай-тек Белый", length: 2.8, width: 2.0, height: 2.1, price: 145000, style: "Хай-тек", material: "MDF", color: "Белый", hasIsland: true, description: "Глянцевый белый, для современных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 18, name: "Прованс Белый", length: 3.0, width: 2.2, height: 2.3, price: 165000, style: "Прованс", material: "Дерево", color: "Белый", hasIsland: false, description: "Белый прованс, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 19, name: "Минимал Белый", length: 2.5, width: 1.8, height: 2.0, price: 115000, style: "Минимализм", material: "MDF", color: "Белый", hasIsland: false, description: "Белый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 20, name: "Эко Белый", length: 3.3, width: 2.2, height: 2.4, price: 230000, style: "Эко", material: "Дерево", color: "Белый", hasIsland: true, description: "Экологичный белый дизайн, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 21, name: "Классика Золотая", length: 3.5, width: 2.4, height: 2.3, price: 190000, style: "Классический", material: "Дерево", color: "Золотой", hasIsland: false, description: "Золотая отделка, для роскошных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 22, name: "Модерн Чёрный", length: 2.6, width: 1.9, height: 2.1, price: 130000, style: "Модерн", material: "MDF", color: "Чёрный", hasIsland: false, description: "Чёрный модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 23, name: "Лофт Кирпич", length: 3.7, width: 2.7, height: 2.5, price: 220000, style: "Лофт", material: "Кирпич", color: "Красный", hasIsland: true, description: "Кирпичная отделка, для лофт-стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 24, name: "Сканди Зелёный", length: 2.9, width: 2.1, height: 2.2, price: 140000, style: "Скандинавский", material: "Дерево", color: "Зелёный", hasIsland: false, description: "Зелёные акценты, для свежих интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 25, name: "Премиум Золотой", length: 4.5, width: 3.5, height: 2.7, price: 350000, style: "Премиум", material: "Мрамор", color: "Золотой", hasIsland: true, description: "Золотой мрамор, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 26, name: "Рустик Белый", length: 3.0, width: 2.1, height: 2.2, price: 170000, style: "Рустик", material: "Дерево", color: "Белый", hasIsland: false, description: "Белый рустик, для деревенского стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 27, name: "Хай-тек Серый", length: 2.9, width: 2.0, height: 2.1, price: 150000, style: "Хай-тек", material: "MDF", color: "Серый", hasIsland: true, description: "Глянцевый серый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 28, name: "Прованс Лаванда", length: 3.2, width: 2.3, height: 2.3, price: 175000, style: "Прованс", material: "Дерево", color: "Лавандовый", hasIsland: false, description: "Лавандовые тона, для романтичных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 29, name: "Минимал Чёрный", length: 2.4, width: 1.7, height: 2.0, price: 105000, style: "Минимализм", material: "MDF", color: "Чёрный", hasIsland: false, description: "Чёрный минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 30, name: "Эко Серый", length: 3.5, width: 2.4, height: 2.5, price: 240000, style: "Эко", material: "Дерево", color: "Серый", hasIsland: true, description: "Экологичный серый дизайн, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 31, name: "Классика Темный Дуб", length: 3.6, width: 2.3, height: 2.3, price: 185000, style: "Классический", material: "Дуб", color: "Тёмно-коричневый", hasIsland: false, description: "Тёмный дуб, для классических интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 32, name: "Модерн Зелёный", length: 2.7, width: 1.9, height: 2.1, price: 135000, style: "Модерн", material: "MDF", color: "Зелёный", hasIsland: false, description: "Зелёный модерн, для свежих кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 33, name: "Лофт Сталь", length: 3.8, width: 2.6, height: 2.5, price: 225000, style: "Лофт", material: "Сталь", color: "Серебристый", hasIsland: true, description: "Стальная отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 34, name: "Сканди Голубой", length: 2.9, width: 2.0, height: 2.2, price: 145000, style: "Скандинавский", material: "Дерево", color: "Голубой", hasIsland: false, description: "Голубые акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 35, name: "Премиум Серебро", length: 4.3, width: 3.3, height: 2.6, price: 330000, style: "Премиум", material: "Металл", color: "Серебристый", hasIsland: true, description: "Серебряная отделка, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 36, name: "Рустик Кедр", length: 3.2, width: 2.1, height: 2.3, price: 190000, style: "Рустик", material: "Кедр", color: "Коричневый", hasIsland: false, description: "Кедровая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 37, name: "Хай-тек Золотой", length: 2.8, width: 2.0, height: 2.1, price: 160000, style: "Хай-тек", material: "MDF", color: "Золотой", hasIsland: true, description: "Золотой глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 38, name: "Прованс Розовый", length: 3.1, width: 2.2, height: 2.3, price: 180000, style: "Прованс", material: "Дерево", color: "Розовый", hasIsland: false, description: "Розовые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 39, name: "Минимал Золотой", length: 2.5, width: 1.8, height: 2.0, price: 120000, style: "Минимализм", material: "MDF", color: "Золотой", hasIsland: false, description: "Золотой минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 40, name: "Эко Коричневый", length: 3.4, width: 2.3, height: 2.4, price: 250000, style: "Эко", material: "Дерево", color: "Коричневый", hasIsland: true, description: "Экологичный коричневый, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 41, name: "Классика Чёрный", length: 3.7, width: 2.4, height: 2.3, price: 195000, style: "Классический", material: "Дерево", color: "Чёрный", hasIsland: false, description: "Чёрная классика, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 42, name: "Модерн Красный", length: 2.6, width: 1.9, height: 2.1, price: 140000, style: "Модерн", material: "MDF", color: "Красный", hasIsland: false, description: "Красный модерн, для ярких кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 43, name: "Лофт Дерево", length: 3.9, width: 2.8, height: 2.5, price: 230000, style: "Лофт", material: "Дерево", color: "Коричневый", hasIsland: true, description: "Деревянный лофт, для просторных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 44, name: "Сканди Жёлтый", length: 2.8, width: 2.0, height: 2.2, price: 150000, style: "Скандинавский", material: "Дерево", color: "Жёлтый", hasIsland: false, description: "Жёлтые акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 45, name: "Премиум Бронза", length: 4.4, width: 3.4, height: 2.6, price: 340000, style: "Премиум", material: "Металл", color: "Бронзовый", hasIsland: true, description: "Бронзовая отделка, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 46, name: "Рустик Сосна", length: 3.3, width: 2.2, height: 2.3, price: 200000, style: "Рустик", material: "Сосна", color: "Коричневый", hasIsland: false, description: "Сосновая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 47, name: "Хай-тек Оранжевый", length: 2.9, width: 2.1, height: 2.1, price: 165000, style: "Хай-тек", material: "MDF", color: "Оранжевый", hasIsland: true, description: "Оранжевый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 48, name: "Прованс Фиолетовый", length: 3.2, width: 2.3, height: 2.3, price: 190000, style: "Прованс", material: "Дерево", color: "Фиолетовый", hasIsland: false, description: "Фиолетовые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 49, name: "Минимал Красный", length: 2.5, width: 1.8, height: 2.0, price: 125000, style: "Минимализм", material: "MDF", color: "Красный", hasIsland: false, description: "Красный минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 50, name: "Эко Зелёный", length: 3.6, width: 2.4, height: 2.5, price: 260000, style: "Эко", material: "Дерево", color: "Зелёный", hasIsland: true, description: "Экологичный зелёный, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 51, name: "Классика Серебро", length: 3.8, width: 2.5, height: 2.4, price: 210000, style: "Классический", material: "Металл", color: "Серебристый", hasIsland: false, description: "Серебряная классика, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 52, name: "Модерн Жёлтый", length: 2.7, width: 1.9, height: 2.1, price: 145000, style: "Модерн", material: "MDF", color: "Жёлтый", hasIsland: false, description: "Жёлтый модерн, для ярких кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 53, name: "Лофт Камень", length: 4.0, width: 2.9, height: 2.6, price: 250000, style: "Лофт", material: "Камень", color: "Серый", hasIsland: true, description: "Каменная отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 54, name: "Сканди Оранжевый", length: 2.8, width: 2.0, height: 2.2, price: 155000, style: "Скандинавский", material: "Дерево", color: "Оранжевый", hasIsland: false, description: "Оранжевые акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 55, name: "Премиум Алый", length: 4.6, width: 3.6, height: 2.7, price: 360000, style: "Премиум", material: "Мрамор", color: "Алый", hasIsland: true, description: "Алый мрамор, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 56, name: "Рустик Бук", length: 3.4, width: 2.2, height: 2.3, price: 205000, style: "Рустик", material: "Бук", color: "Коричневый", hasIsland: false, description: "Буковая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 57, name: "Хай-тек Синий", length: 3.0, width: 2.1, height: 2.1, price: 165000, style: "Хай-тек", material: "MDF", color: "Синий", hasIsland: true, description: "Синий глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 58, name: "Прованс Голубой", length: 3.3, width: 2.4, height: 2.3, price: 190000, style: "Прованс", material: "Дерево", color: "Голубой", hasIsland: false, description: "Голубые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 59, name: "Минимал Чёрный", length: 2.6, width: 1.8, height: 2.0, price: 130000, style: "Минимализм", material: "MDF", color: "Чёрный", hasIsland: false, description: "Чёрный минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 60, name: "Эко Оливковый", length: 3.7, width: 2.5, height: 2.5, price: 270000, style: "Эко", material: "Дерево", color: "Оливковый", hasIsland: true, description: "Экологичный оливковый, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 61, name: "Классика Бронза", length: 3.9, width: 2.6, height: 2.4, price: 215000, style: "Классический", material: "Металл", color: "Бронзовый", hasIsland: false, description: "Бронзовая классика, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 62, name: "Модерн Фиолетовый", length: 2.8, width: 2.0, height: 2.1, price: 150000, style: "Модерн", material: "MDF", color: "Фиолетовый", hasIsland: false, description: "Фиолетовый модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 63, name: "Лофт Стекло", length: 4.1, width: 3.0, height: 2.6, price: 260000, style: "Лофт", material: "Стекло", color: "Прозрачный", hasIsland: true, description: "Стеклянная отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 64, name: "Сканди Красный", length: 2.9, width: 2.1, height: 2.2, price: 160000, style: "Скандинавский", material: "Дерево", color: "Красный", hasIsland: false, description: "Красные акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 65, name: "Премиум Изумруд", length: 4.7, width: 3.7, height: 2.7, price: 370000, style: "Премиум", material: "Мрамор", color: "Изумрудный", hasIsland: true, description: "Изумрудный мрамор, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 66, name: "Рустик Ясень", length: 3.5, width: 2.3, height: 2.3, price: 210000, style: "Рустик", material: "Ясень", color: "Коричневый", hasIsland: false, description: "Ясеневая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 67, name: "Хай-тек Розовый", length: 3.1, width: 2.2, height: 2.1, price: 170000, style: "Хай-тек", material: "MDF", color: "Розовый", hasIsland: true, description: "Розовый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 68, name: "Прованс Жёлтый", length: 3.4, width: 2.5, height: 2.3, price: 195000, style: "Прованс", material: "Дерево", color: "Жёлтый", hasIsland: false, description: "Жёлтые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 69, name: "Минимал Бордо", length: 2.8, width: 1.9, height: 2.0, price: 140000, style: "Минимализм", material: "MDF", color: "Бордовый", hasIsland: false, description: "Бордовый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 70, name: "Эко Бордо", length: 3.9, width: 2.7, height: 2.5, price: 290000, style: "Эко", material: "Дерево", color: "Бордовый", hasIsland: true, description: "Экологичный бордовый, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 71, name: "Классика Оливковый", length: 4.0, width: 2.7, height: 2.4, price: 230000, style: "Классический", material: "Дерево", color: "Оливковый", hasIsland: false, description: "Оливковый классический стиль, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 72, name: "Модерн Сапфировый", length: 2.9, width: 2.1, height: 2.1, price: 160000, style: "Модерн", material: "MDF", color: "Сапфировый", hasIsland: false, description: "Сапфировый модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 73, name: "Лофт Медь", length: 4.3, width: 3.2, height: 2.6, price: 280000, style: "Лофт", material: "Медь", color: "Медный", hasIsland: true, description: "Медная отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 74, name: "Сканди Бордо", length: 3.1, width: 2.2, height: 2.2, price: 170000, style: "Скандинавский", material: "Дерево", color: "Бордовый", hasIsland: false, description: "Бордовые акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 75, name: "Премиум Оникс", length: 4.9, width: 3.9, height: 2.7, price: 390000, style: "Премиум", material: "Мрамор", color: "Чёрный", hasIsland: true, description: "Ониксовая отделка, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 76, name: "Рустик Вишня", length: 3.7, width: 2.4, height: 2.3, price: 220000, style: "Рустик", material: "Вишня", color: "Коричневый", hasIsland: false, description: "Вишнёвая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 77, name: "Хай-тек Сапфировый", length: 3.3, width: 2.3, height: 2.1, price: 180000, style: "Хай-тек", material: "MDF", color: "Сапфировый", hasIsland: true, description: "Сапфировый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 78, name: "Прованс Бирюзовый", length: 3.6, width: 2.6, height: 2.3, price: 205000, style: "Прованс", material: "Дерево", color: "Бирюзовый", hasIsland: false, description: "Бирюзовые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 79, name: "Минимал Оливковый", length: 2.9, width: 2.0, height: 2.0, price: 145000, style: "Минимализм", material: "MDF", color: "Оливковый", hasIsland: false, description: "Оливковый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 80, name: "Эко Жёлтый", length: 4.0, width: 2.8, height: 2.5, price: 300000, style: "Эко", material: "Дерево", color: "Жёлтый", hasIsland: true, description: "Экологичный жёлтый, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 81, name: "Классика Индиго", length: 4.1, width: 2.8, height: 2.4, price: 240000, style: "Классический", material: "Дерево", color: "Индиго", hasIsland: false, description: "Индиго классический стиль, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 82, name: "Модерн Лайм", length: 3.0, width: 2.2, height: 2.1, price: 165000, style: "Модерн", material: "MDF", color: "Лаймовый", hasIsland: false, description: "Лаймовый модерн, для ярких кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 83, name: "Лофт Оникс", length: 4.4, width: 3.3, height: 2.6, price: 290000, style: "Лофт", material: "Оникс", color: "Чёрный", hasIsland: true, description: "Ониксовая отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 84, name: "Сканди Индиго", length: 3.2, width: 2.3, height: 2.2, price: 175000, style: "Скандинавский", material: "Дерево", color: "Индиго", hasIsland: false, description: "Индиго акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 85, name: "Премиум Золотистый", length: 5.0, width: 4.0, height: 2.8, price: 400000, style: "Премиум", material: "Мрамор", color: "Золотистый", hasIsland: true, description: "Золотистый мрамор, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 86, name: "Рустик Лиственница", length: 3.8, width: 2.5, height: 2.3, price: 225000, style: "Рустик", material: "Лиственница", color: "Коричневый", hasIsland: false, description: "Лиственничная текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 87, name: "Хай-тек Лайм", length: 3.4, width: 2.4, height: 2.1, price: 185000, style: "Хай-тек", material: "MDF", color: "Лаймовый", hasIsland: true, description: "Лаймовый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 88, name: "Прованс Индиго", length: 3.7, width: 2.7, height: 2.3, price: 210000, style: "Прованс", material: "Дерево", color: "Индиго", hasIsland: false, description: "Индиго тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 89, name: "Минимал Сапфировый", length: 3.0, width: 2.1, height: 2.0, price: 150000, style: "Минимализм", material: "MDF", color: "Сапфировый", hasIsland: false, description: "Сапфировый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 90, name: "Эко Лайм", length: 4.1, width: 2.9, height: 2.5, price: 310000, style: "Эко", material: "Дерево", color: "Лаймовый", hasIsland: true, description: "Экологичный лаймовый, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 91, name: "Классика Бордо", length: 3.6, width: 2.4, height: 2.3, price: 220000, style: "Классический", material: "Дерево", color: "Бордовый", hasIsland: false, description: "Бордовый классический стиль, для элегантных интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 92, name: "Модерн Бирюзовый", length: 2.8, width: 2.0, height: 2.1, price: 155000, style: "Модерн", material: "MDF", color: "Бирюзовый", hasIsland: false, description: "Бирюзовый модерн, для стильных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 93, name: "Лофт Гранит", length: 4.2, width: 3.1, height: 2.6, price: 270000, style: "Лофт", material: "Гранит", color: "Серый", hasIsland: true, description: "Гранитная отделка, для индустриального стиля.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 94, name: "Сканди Фиолетовый", length: 3.1, width: 2.2, height: 2.2, price: 170000, style: "Скандинавский", material: "Дерево", color: "Фиолетовый", hasIsland: false, description: "Фиолетовые акценты, для светлых интерьеров.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 95, name: "Премиум Сапфир", length: 4.8, width: 3.8, height: 2.7, price: 380000, style: "Премиум", material: "Мрамор", color: "Сапфировый", hasIsland: true, description: "Сапфировый мрамор, для элитных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 96, name: "Рустик Клён", length: 3.6, width: 2.3, height: 2.3, price: 215000, style: "Рустик", material: "Клён", color: "Коричневый", hasIsland: false, description: "Клёновая текстура, для деревенских кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 97, name: "Хай-тек Бирюзовый", length: 3.2, width: 2.2, height: 2.1, price: 175000, style: "Хай-тек", material: "MDF", color: "Бирюзовый", hasIsland: true, description: "Бирюзовый глянцевый, для современных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 98, name: "Прованс Жёлтый", length: 3.5, width: 2.5, height: 2.3, price: 200000, style: "Прованс", material: "Дерево", color: "Жёлтый", hasIsland: false, description: "Жёлтые тона, для романтичных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 99, name: "Минимал Оливковый", length: 2.9, width: 2.0, height: 2.0, price: 145000, style: "Минимализм", material: "MDF", color: "Оливковый", hasIsland: false, description: "Оливковый минимализм, для компактных кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
-        { id: 100, name: "Эко Индиго", length: 4.0, width: 2.8, height: 2.5, price: 310000, style: "Эко", material: "Дерево", color: "Индиго", hasIsland: true, description: "Экологичный индиго, для больших кухонь.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+      const fittingsDatabase = [
+        { id: 1, name: "Петля угловая стандартная", type: "Петля", subtype: "Угловая", mechanism: "Без доводчика", specificOption: "Стандартная", brand: "Blum", price: 500, description: "Надёжная угловая петля для шкафов.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 2, name: "Петля накладная с доводчиком", type: "Петля", subtype: "Накладная", mechanism: "С доводчиком", specificOption: "С доводчиком", brand: "Hettich", price: 800, description: "Накладная петля с плавным закрыванием.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 3, name: "Петля врезная push-to-open", type: "Петля", subtype: "Врезная", mechanism: "Push-to-open", specificOption: "Push-to-open", brand: "Hafele", price: 1200, description: "Врезная петля с push-механизмом.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 4, name: "Направляющая шариковая стандартная", type: "Направляющая", subtype: "Шариковая", mechanism: "Без доводчика", specificOption: "Стандартная", brand: "Blum", price: 1500, description: "Шариковая направляющая для ящиков.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 5, name: "Направляющая роликовая с доводчиком", type: "Направляющая", subtype: "Роликовая", mechanism: "С доводчиком", specificOption: "С доводчиком", brand: "Hettich", price: 1800, description: "Роликовая направляющая с плавным ходом.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 6, name: "Направляющая скрытого монтажа push-to-open", type: "Направляющая", subtype: "Скрытого монтажа", mechanism: "Push-to-open", specificOption: "Push-to-open", brand: "Hafele", price: 2000, description: "Скрытая направляющая для ящиков.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 7, name: "Ручка круглая классическая", type: "Ручка", subtype: "Круглая", mechanism: "Без доводчика", specificOption: "Классическая", brand: "Blum", price: 300, description: "Классическая круглая ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 8, name: "Ручка длинная современная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "Hettich", price: 400, description: "Современная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 9, name: "Ручка квадратная push-to-open", type: "Ручка", subtype: "Квадратная", mechanism: "Push-to-open", specificOption: "Скоба", brand: "Hafele", price: 600, description: "Квадратная ручка-скоба с push-механизмом.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 10, name: "Крепление угловое базовое", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Базовое", brand: "Hafele", price: 400, description: "Базовое угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 11, name: "Крепление скрытое регулируемое", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Grass", price: 500, description: "Регулируемое скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 12, name: "Петля угловая усиленная", type: "Петля", subtype: "Угловая", mechanism: "Без доводчика", specificOption: "Усиленная", brand: "Grass", price: 600, description: "Усиленная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 13, name: "Петля накладная премиум", type: "Петля", subtype: "Накладная", mechanism: "С доводчиком", specificOption: "С доводчиком", brand: "FGV", price: 850, description: "Премиум накладная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 14, name: "Направляющая роликовая лёгкая", type: "Направляющая", subtype: "Роликовая", mechanism: "Без доводчика", specificOption: "Лёгкая", brand: "FGV", price: 1200, description: "Лёгкая роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 15, name: "Направляющая шариковая усиленная", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Blum", price: 2200, description: "Усиленная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 16, name: "Ручка круглая винтажная", type: "Ручка", subtype: "Круглая", mechanism: "Без доводчика", specificOption: "Винтажная", brand: "Hettich", price: 500, description: "Винтажная круглая ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 17, name: "Ручка длинная хромированная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "Hafele", price: 450, description: "Хромированная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 18, name: "Крепление угловое регулируемое", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Grass", price: 600, description: "Регулируемое угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 19, name: "Петля декоративная угловая", type: "Петля", subtype: "Угловая", mechanism: "Без доводчика", specificOption: "Декоративная", brand: "Blum", price: 850, description: "Декоративная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 20, name: "Петля усиленная врезная", type: "Петля", subtype: "Врезная", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Hettich", price: 650, description: "Усиленная врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 21, name: "Направляющая роликовая лёгкая+", type: "Направляющая", subtype: "Роликовая", mechanism: "Без доводчика", specificOption: "Лёгкая", brand: "FGV", price: 1300, description: "Улучшенная лёгкая роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 22, name: "Ручка квадратная эргономичная", type: "Ручка", subtype: "Квадратная", mechanism: "Push-to-open", specificOption: "Скоба", brand: "Blum", price: 700, description: "Эргономичная квадратная ручка-скоба.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 23, name: "Петля скрытая врезная", type: "Петля", subtype: "Врезная", mechanism: "Push-to-open", specificOption: "Скрытая", brand: "Hettich", price: 1100, description: "Скрытая врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 24, name: "Направляющая шариковая декоративная", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Декоративная", brand: "Hafele", price: 1700, description: "Декоративная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 25, name: "Ручка круглая винтажная+", type: "Ручка", subtype: "Круглая", mechanism: "Без доводчика", specificOption: "Винтажная", brand: "Grass", price: 350, description: "Улучшенная винтажная круглая ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 26, name: "Крепление потолочное регулируемое", type: "Крепление", subtype: "Потолочное", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Hettich", price: 550, description: "Регулируемое потолочное крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 27, name: "Петля двойная угловая", type: "Петля", subtype: "Угловая", mechanism: "С доводчиком", specificOption: "Двойная", brand: "Hafele", price: 950, description: "Двойная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 28, name: "Направляющая роликовая мягкая", type: "Направляющая", subtype: "Роликовая", mechanism: "Push-to-open", specificOption: "Мягкая", brand: "Grass", price: 1900, description: "Мягкая роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 29, name: "Ручка длинная дизайнерская", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "FGV", price: 600, description: "Дизайнерская длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 30, name: "Крепление угловое регулируемое+", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Hafele", price: 700, description: "Улучшенное регулируемое угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 31, name: "Петля мини угловая", type: "Петля", subtype: "Угловая", mechanism: "Push-to-open", specificOption: "Мини", brand: "Grass", price: 550, description: "Мини-угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 32, name: "Направляющая шариковая двойная", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Двойная", brand: "FGV", price: 2300, description: "Двойная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 33, name: "Ручка квадратная хромированная", type: "Ручка", subtype: "Квадратная", mechanism: "Без доводчика", specificOption: "Скоба", brand: "Blum", price: 450, description: "Хромированная квадратная ручка-скоба.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 34, name: "Крепление скрытое улучшенное", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Улучшенное", brand: "FGV", price: 600, description: "Улучшенное скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 35, name: "Петля премиум врезная", type: "Петля", subtype: "Врезная", mechanism: "Push-to-open", specificOption: "Премиум", brand: "Blum", price: 1300, description: "Премиум-врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 36, name: "Направляющая шариковая усиленная+", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Hettich", price: 2500, description: "Усиленная шариковая направляющая премиум-класса.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 37, name: "Ручка овальная дизайнерская", type: "Ручка", subtype: "Овальная", mechanism: "Без доводчика", specificOption: "Дизайнерская", brand: "Hafele", price: 800, description: "Дизайнерская овальная ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 38, name: "Крепление универсальное регулируемое", type: "Крепление", subtype: "Универсальное", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Blum", price: 750, description: "Регулируемое универсальное крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 39, name: "Петля угловая компактная", type: "Петля", subtype: "Угловая", mechanism: "Без доводчика", specificOption: "Компактная", brand: "Hettich", price: 520, description: "Компактная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 40, name: "Направляющая скрытого монтажа лёгкая", type: "Направляющая", subtype: "Скрытого монтажа", mechanism: "Push-to-open", specificOption: "Лёгкая", brand: "Grass", price: 1750, description: "Лёгкая скрытая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 41, name: "Ручка длинная минималистичная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "FGV", price: 550, description: "Минималистичная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 42, name: "Крепление угловое усиленное", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Усиленное", brand: "Blum", price: 650, description: "Усиленное угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 43, name: "Петля врезная стандартная", type: "Петля", subtype: "Врезная", mechanism: "С доводчиком", specificOption: "Стандартная", brand: "Hafele", price: 900, description: "Стандартная врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 44, name: "Направляющая роликовая усиленная", type: "Направляющая", subtype: "Роликовая", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Blum", price: 2000, description: "Усиленная роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 45, name: "Ручка круглая современная", type: "Ручка", subtype: "Круглая", mechanism: "Без доводчика", specificOption: "Современная", brand: "Hettich", price: 400, description: "Современная круглая ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 46, name: "Крепление скрытое компактное", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Компактное", brand: "Grass", price: 450, description: "Компактное скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 47, name: "Петля угловая декоративная+", type: "Петля", subtype: "Угловая", mechanism: "Push-to-open", specificOption: "Декоративная", brand: "FGV", price: 1000, description: "Улучшенная декоративная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 48, name: "Направляющая шариковая компактная", type: "Направляющая", subtype: "Шариковая", mechanism: "Без доводчика", specificOption: "Компактная", brand: "Blum", price: 1600, description: "Компактная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 49, name: "Ручка овальная винтажная", type: "Ручка", subtype: "Овальная", mechanism: "Без доводчика", specificOption: "Винтажная", brand: "Hafele", price: 600, description: "Винтажная овальная ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 50, name: "Крепление угловое стандартное", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Стандартное", brand: "Hettich", price: 500, description: "Стандартное угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 51, name: "Петля врезная премиум+", type: "Петля", subtype: "Врезная", mechanism: "С доводчиком", specificOption: "Премиум", brand: "Grass", price: 1400, description: "Улучшенная премиум-врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 52, name: "Направляющая скрытого монтажа усиленная", type: "Направляющая", subtype: "Скрытого монтажа", mechanism: "Push-to-open", specificOption: "Усиленная", brand: "FGV", price: 2100, description: "Усиленная скрытая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 53, name: "Ручка длинная эргономичная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "Blum", price: 650, description: "Эргономичная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 54, name: "Крепление потолочное компактное", type: "Крепление", subtype: "Потолочное", mechanism: "Без доводчика", specificOption: "Компактное", brand: "Hafele", price: 480, description: "Компактное потолочное крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 55, name: "Петля угловая стандартная+", type: "Петля", subtype: "Угловая", mechanism: "С доводчиком", specificOption: "Стандартная", brand: "Hettich", price: 720, description: "Улучшенная стандартная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 56, name: "Направляющая роликовая декоративная+", type: "Направляющая", subtype: "Роликовая", mechanism: "С доводчиком", specificOption: "Декоративная", brand: "Grass", price: 1850, description: "Улучшенная декоративная роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 57, name: "Ручка квадратная минималистичная", type: "Ручка", subtype: "Квадратная", mechanism: "Push-to-open", specificOption: "Скоба", brand: "FGV", price: 700, description: "Минималистичная квадратная ручка-скоба.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 58, name: "Крепление скрытое стандартное", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Стандартное", brand: "Blum", price: 520, description: "Стандартное скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 59, name: "Петля накладная компактная", type: "Петля", subtype: "Накладная", mechanism: "Без доводчика", specificOption: "Компактная", brand: "Hafele", price: 600, description: "Компактная накладная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 60, name: "Направляющая шариковая лёгкая", type: "Направляющая", subtype: "Шариковая", mechanism: "Без доводчика", specificOption: "Лёгкая", brand: "Hettich", price: 1400, description: "Лёгкая шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 61, name: "Ручка овальная современная", type: "Ручка", subtype: "Овальная", mechanism: "Без доводчика", specificOption: "Современная", brand: "Grass", price: 550, description: "Современная овальная ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 62, name: "Крепление угловое декоративное", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Декоративное", brand: "FGV", price: 580, description: "Декоративное угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 63, name: "Петля врезная декоративная", type: "Петля", subtype: "Врезная", mechanism: "Push-to-open", specificOption: "Декоративная", brand: "Blum", price: 1100, description: "Декоративная врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 64, name: "Направляющая скрытого монтажа декоративная", type: "Направляющая", subtype: "Скрытого монтажа", mechanism: "С доводчиком", specificOption: "Декоративная", brand: "Hafele", price: 1900, description: "Декоративная скрытая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 65, name: "Ручка длинная винтажная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "Hettich", price: 620, description: "Винтажная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 66, name: "Крепление потолочное усиленное", type: "Крепление", subtype: "Потолочное", mechanism: "Без доводчика", specificOption: "Усиленное", brand: "Grass", price: 700, description: "Усиленное потолочное крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 67, name: "Петля угловая премиум+", type: "Петля", subtype: "Угловая", mechanism: "С доводчиком", specificOption: "Премиум", brand: "FGV", price: 1250, description: "Улучшенная премиум-угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 68, name: "Направляющая роликовая компактная", type: "Направляющая", subtype: "Роликовая", mechanism: "Без доводчика", specificOption: "Компактная", brand: "Blum", price: 1550, description: "Компактная роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 69, name: "Ручка квадратная дизайнерская", type: "Ручка", subtype: "Квадратная", mechanism: "Push-to-open", specificOption: "Скоба", brand: "Hafele", price: 750, description: "Дизайнерская квадратная ручка-скоба.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 70, name: "Крепление скрытое декоративное", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Декоративное", brand: "Hettich", price: 560, description: "Декоративное скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 71, name: "Петля накладная усиленная", type: "Петля", subtype: "Накладная", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Grass", price: 950, description: "Усиленная накладная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 72, name: "Направляющая шариковая декоративная+", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Декоративная", brand: "FGV", price: 2000, description: "Улучшенная декоративная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 73, name: "Ручка овальная минималистичная", type: "Ручка", subtype: "Овальная", mechanism: "Без доводчика", specificOption: "Минималистичная", brand: "Blum", price: 580, description: "Минималистичная овальная ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 74, name: "Крепление угловое компактное", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Компактное", brand: "Hafele", price: 490, description: "Компактное угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
+        { id: 75, name: "Петля врезная компактная", type: "Петля", subtype: "Врезная", mechanism: "Push-to-open", specificOption: "Компактная", brand: "Hettich", price: 880, description: "Компактная врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" }
       ];
 
-      const styles = ['Классический', 'Модерн', 'Лофт', 'Скандинавский', 'Премиум', 'Рустик', 'Хай-тек', 'Прованс', 'Минимализм', 'Эко'];
-      const materials = ['Дерево', 'MDF', 'Мрамор', 'Металл', 'Бетон', 'Орех'];
-      const colors = ['Белый', 'Серый', 'Чёрный', 'Коричневый', 'Пастель', 'Синий', 'Кремовый'];
-
-      useEffect(() => {
-        const saved = localStorage.getItem('savedKitchenResults');
-        if (saved) setSavedResults(JSON.parse(saved));
-      }, []);
-
-      const handleInputChange = (e, field) => {
-        const value = e.target.value;
-        if (field === 'length' || field === 'width' || field === 'height' || field === 'budget') {
-          if (value === '' || (Number(value) >= 0 && !isNaN(value))) {
-            if (field === 'budget') setBudget(value);
-            else setRoomParams({ ...roomParams, [field]: value });
-          }
-        } else if (field === 'style') setStyle(value);
-        else if (field === 'material') setMaterial(value);
-        else if (field === 'color') setColor(value);
-        else if (field === 'hasIsland') setHasIsland(value === 'yes');
-        setError('');
+      const specificOptions = {
+        "Петля": ["Стандартная", "С доводчиком", "Push-to-open", "Усиленная", "Декоративная"],
+        "Направляющая": ["Стандартная", "С доводчиком", "Push-to-open", "Усиленная", "Декоративная"],
+        "Ручка": ["Классическая", "Рейлинг", "Скоба", "Винтажная", "Современная"],
+        "Крепление": ["Базовое", "Регулируемое", "Усиленное", "Компактное", "Декоративное"]
       };
 
       const findBestOptions = () => {
-        const { length, width, height } = roomParams;
-        const budgetValue = parseFloat(budget);
+        const filteredFittings = fittingsDatabase.filter(fitting => {
+          const typeMatch = type ? fitting.type === type : true;
+          const mechanismMatch = mechanism ? fitting.mechanism === mechanism : true;
+          const specificOptionMatch = specificOption ? fitting.specificOption === specificOption : true;
+          const brandMatch = brand ? fitting.brand === brand : true;
 
-        if (!length || !width || !height || !budget) {
-          setError('Пожалуйста, заполните все поля размеров и бюджета.');
-          setResults([]);
-          return;
-        }
-
-        if (isNaN(length) || isNaN(width) || isNaN(height) || isNaN(budgetValue) || length <= 0 || width <= 0 || height <= 0 || budgetValue <= 0) {
-          setError('Введите корректные числовые значения больше 0.');
-          setResults([]);
-          return;
-        }
-
-        const tolerance = 0.1;
-        let filteredOptions = kitchenDatabase.map(option => {
-          const lengthFit = option.length <= parseFloat(length) * (1 + tolerance);
-          const widthFit = option.width <= parseFloat(width) * (1 + tolerance);
-          const heightFit = option.height <= parseFloat(height) * (1 + tolerance);
-          const priceFit = option.price <= budgetValue * (1 + tolerance);
-
-          let priority = 1.0;
-          if (lengthFit) priority *= 1.0; else priority *= 0.8;
-          if (widthFit) priority *= 1.0; else priority *= 0.8;
-          if (heightFit) priority *= 1.0; else priority *= 0.8;
-          if (priceFit) priority *= 1.0; else priority *= 0.9;
-
-          return { ...option, priority };
-        }).filter(option => {
-          return option.length <= parseFloat(length) * (1 + tolerance) &&
-                 option.width <= parseFloat(width) * (1 + tolerance) &&
-                 option.height <= parseFloat(height) * (1 + tolerance) &&
-                 option.price <= budgetValue * (1 + tolerance);
+          return typeMatch && mechanismMatch && specificOptionMatch && brandMatch;
         });
 
-        if (style) filteredOptions = filteredOptions.filter(option => option.style === style);
-        if (material) filteredOptions = filteredOptions.filter(option => option.material === material);
-        if (color) filteredOptions = filteredOptions.filter(option => option.color === color);
-        if (hasIsland !== '') filteredOptions = filteredOptions.filter(option => option.hasIsland === hasIsland);
-
-        const sortedOptions = filteredOptions.sort((a, b) => b.priority - a.priority || b.price - a.price).slice(0, 3);
-        if (sortedOptions.length === 0) {
-          setError('Не найдено подходящих вариантов для заданных параметров.');
-          setResults([]);
+        if (filteredFittings.length === 0) {
+          setError('Точного совпадения не найдено. Показываем ближайший вариант.');
+          const fallback = type ? fittingsDatabase.find(f => f.type === type) : fittingsDatabase[0];
+          setResults([fallback]);
         } else {
-          setResults(sortedOptions);
           setError('');
+          setResults(filteredFittings);
         }
       };
 
-      const saveResults = () => {
-        if (results.length > 0) {
-          const newSaved = [...savedResults, { id: Date.now(), data: results, params: { ...roomParams, budget, style, material, color, hasIsland }, timestamp: new Date().toLocaleString() }];
-          setSavedResults(newSaved);
-          localStorage.setItem('savedKitchenResults', JSON.stringify(newSaved));
-          alert('Результаты сохранены!');
-        }
+      const saveToPDF = (allResults = false) => {
+        const content = allResults ? [...results, ...savedResults] : results;
+        const docDefinition = {
+          content: [
+            { text: allResults ? 'Полный список фурнитуры' : 'Результаты подбора фурнитуры', style: 'header' },
+            ...content.map(fitting => ({
+              text: [
+                `Название: ${fitting.name}\n`,
+                `Тип: ${fitting.type} (${fitting.subtype})\n`,
+                `Механизм: ${fitting.mechanism}\n`,
+                `Опция: ${fitting.specificOption}\n`,
+                `Бренд: ${fitting.brand}\n`,
+                `Цена: ${fitting.price} руб.\n`,
+                `Описание: ${fitting.description}\n\n`
+              ]
+            }))
+          ],
+          styles: {
+            header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10], color: '#000000' }
+          }
+        };
+        pdfMake.createPdf(docDefinition).download(`fittings_results_${allResults ? 'all' : 'selected'}.pdf`);
       };
 
-      const exportToPDF = () => {
-        if (results.length > 0) {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF();
-
-          // Загрузка шрифта для поддержки кириллицы
-          const fontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/fonts/Roboto/Roboto-Regular.ttf';
-          doc.addFileToVFS('Roboto-Regular.ttf', window.pdfMake.vfs['Roboto-Regular.ttf']);
-          doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
-          doc.setFont('Roboto');
-
-          // Установка размера шрифта и добавление текста
-          doc.setFontSize(16);
-          doc.text('Рекомендуемые варианты кухонной мебели', 10, 10);
-          doc.setFontSize(12);
-          doc.text(`Параметры комнаты: Длина ${roomParams.length} м, Ширина ${roomParams.width} м, Высота ${roomParams.height} м, Бюджет: ${budget} руб.`, 10, 20);
-          if (style) doc.text(`Стиль: ${style}`, 10, 30);
-          if (material) doc.text(`Материал: ${material}`, 10, 40);
-          if (color) doc.text(`Цвет: ${color}`, 10, 50);
-          doc.text(`Остров: ${hasIsland ? 'Да' : 'Нет'}`, 10, 60);
-
-          let yOffset = 70;
-          results.forEach((option, index) => {
-            doc.text(`${index + 1}. ${option.name}`, 10, yOffset);
-            doc.text(`Цена: ${option.price} руб.`, 10, yOffset + 10);
-            doc.text(`Размеры: ${option.length} x ${option.width} x ${option.height} м`, 10, yOffset + 20);
-            doc.text(`Стиль: ${option.style}, Материал: ${option.material}, Цвет: ${option.color}`, 10, yOffset + 30);
-            doc.text(`Остров: ${option.hasIsland ? 'Да' : 'Нет'}`, 10, yOffset + 40);
-            doc.text(`Описание: ${option.description}`, 10, yOffset + 50);
-            yOffset += 60;
-            if (yOffset > 260) {
-              doc.addPage();
-              yOffset = 10;
-            }
-          });
-
-          doc.save(`kitchen_config_${new Date().toISOString().split('T')[0]}.pdf`);
-          alert('PDF-файл сохранён!');
-        }
+      const saveResult = (fitting) => {
+        setSavedResults([...savedResults, fitting]);
       };
 
       return (
-        <div className="max-w-5xl w-full container-overlay shadow-lg border border-gray-700">
-          <h1 className="text-3xl font-bold text-center text-white mb-6">Конфигуратор кухонной мебели</h1>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-gray-300 mb-2">Длина помещения (м):</label>
-              <input
-                type="number"
-                value={roomParams.length}
-                onChange={(e) => handleInputChange(e, 'length')}
-                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Например, 3.5"
-                step="0.1"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Ширина помещения (м):</label>
-              <input
-                type="number"
-                value={roomParams.width}
-                onChange={(e) => handleInputChange(e, 'width')}
-                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Например, 2.0"
-                step="0.1"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Высота помещения (м):</label>
-              <input
-                type="number"
-                value={roomParams.height}
-                onChange={(e) => handleInputChange(e, 'height')}
-                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Например, 2.4"
-                step="0.1"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Бюджет (руб):</label>
-              <input
-                type="number"
-                value={budget}
-                onChange={(e) => handleInputChange(e, 'budget')}
-                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Например, 150000"
-                step="1000"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Стиль:</label>
+        <div className="container-overlay">
+          <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent">Конфигуратор мебельной фурнитуры</h1>
+
+          <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8">
+            <div className="w-full md:w-1/3">
+              <label className="block text-sm font-medium text-gray-200">Тип фурнитуры</label>
               <select
-                value={style}
-                onChange={(e) => handleInputChange(e, 'style')}
-                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={type}
+                onChange={(e) => { setType(e.target.value); setSpecificOption(''); }}
+                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
               >
-                <option value="">Выберите стиль</option>
-                {styles.map(s => <option key={s} value={s}>{s}</option>)}
+                <option value="">Выберите тип</option>
+                {[...new Set(fittingsDatabase.map(f => f.type))].map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
               </select>
             </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Материал:</label>
+            <div className="w-full md:w-1/3">
+              <label className="block text-sm font-medium text-gray-200">Механизм</label>
               <select
-                value={material}
-                onChange={(e) => handleInputChange(e, 'material')}
-                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={mechanism}
+                onChange={(e) => setMechanism(e.target.value)}
+                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
               >
-                <option value="">Выберите материал</option>
-                {materials.map(m => <option key={m} value={m}>{m}</option>)}
+                <option value="">Выберите механизм</option>
+                {[...new Set(fittingsDatabase.map(f => f.mechanism))].map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
               </select>
             </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Цвет:</label>
+            <div className="w-full md:w-1/3">
+              <label className="block text-sm font-medium text-gray-200">Бренд</label>
               <select
-                value={color}
-                onChange={(e) => handleInputChange(e, 'color')}
-                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
               >
-                <option value="">Выберите цвет</option>
-                {colors.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Наличие острова:</label>
-              <select
-                value={hasIsland ? 'yes' : 'no'}
-                onChange={(e) => handleInputChange(e, 'hasIsland')}
-                className="w-full p-2 border rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Не важно</option>
-                <option value="yes">Да</option>
-                <option value="no">Нет</option>
+                <option value="">Выберите бренд</option>
+                {[...new Set(fittingsDatabase.map(f => f.brand))].map(b => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
               </select>
             </div>
           </div>
 
-          <div className="text-center mb-6 space-x-4">
+          {type && (
+            <div className="mb-8 text-center">
+              <label className="block text-sm font-medium text-gray-200">Дополнительные опции для {type}</label>
+              <select
+                value={specificOption}
+                onChange={(e) => setSpecificOption(e.target.value)}
+                className="mt-2 block w-full md:w-1/3 mx-auto rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
+              >
+                <option value="">Выберите опцию</option>
+                {specificOptions[type].map(option => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {error && <p className="text-red-400 text-center mb-4">{error}</p>}
+
+          <div className="flex justify-center mb-8">
             <button
               onClick={findBestOptions}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-200"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto"
             >
-              Подобрать варианты
-            </button>
-            <button
-              onClick={saveResults}
-              disabled={results.length === 0}
-              className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition duration-200 disabled:bg-gray-400"
-            >
-              Сохранить результаты
-            </button>
-            <button
-              onClick={exportToPDF}
-              disabled={results.length === 0}
-              className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition duration-200 disabled:bg-gray-400"
-            >
-              Экспорт в PDF
+              Найти варианты
             </button>
           </div>
-
-          {error && (
-            <div className="text-red-400 text-center mb-6">{error}</div>
-          )}
 
           {results.length > 0 && (
             <div>
-              <h2 className="text-2xl font-semibold text-center text-white mb-4">Рекомендуемые варианты:</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {results.map(option => (
-                  <div key={option.id} className="bg-gray-800 p-4 rounded-lg shadow">
-                    <img src={option.image} alt={option.name} className="w-full h-48 object-cover rounded-lg mb-4 border border-gray-600" />
-                    <h3 className="text-xl font-bold text-white">{option.name}</h3>
-                    <p className="text-gray-300">Цена: {option.price} руб.</p>
-                    <p className="text-gray-300">Размеры: {option.length} x {option.width} x {option.height} м</p>
-                    <p className="text-gray-300">Стиль: {option.style}</p>
-                    <p className="text-gray-300">Материал: {option.material}</p>
-                    <p className="text-gray-300">Цвет: {option.color}</p>
-                    <p className="text-gray-300">Остров: {option.hasIsland ? 'Да' : 'Нет'}</p>
-                    <p className="text-gray-300">Описание: {option.description}</p>
+              <h2 className="text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text">Подходящие варианты:</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {results.map(fitting => (
+                  <div
+                    key={fitting.id}
+                    className="bg-gray-900 rounded-xl shadow-xl p-4 hover:bg-gray-800 hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                  >
+                    <img
+                      src={fitting.image}
+                      alt={fitting.name}
+                      className="w-full h-40 object-cover rounded-lg mb-4"
+                    />
+                    <h3 className="text-xl font-semibold text-white">{fitting.name}</h3>
+                    <p className="text-gray-300">Тип: {fitting.type} ({fitting.subtype})</p>
+                    <p className="text-gray-300">Механизм: {fitting.mechanism}</p>
+                    <p className="text-gray-300">Опция: {fitting.specificOption}</p>
+                    <p className="text-gray-300">Бренд: {fitting.brand}</p>
+                    <p className="text-purple-500 font-bold mt-2">Цена: {fitting.price} руб.</p>
+                    <p className="text-gray-400 mt-2">{fitting.description}</p>
+                    <button
+                      onClick={() => saveResult(fitting)}
+                      className="mt-4 w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-md hover:from-blue-700 hover:to-blue-800 transition duration-200"
+                    >
+                      Сохранить
+                    </button>
+                    <p className="text-xs text-gray-500 mt-2">*Данная цена может варьироваться в зависимости от выбора продавца или поставщика</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-col md:flex-row justify-center mt-8 gap-4">
+                <button
+                  onClick={() => saveToPDF(false)}
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto"
+                >
+                  Экспорт выбранных в PDF
+                </button>
+                <button
+                  onClick={() => saveToPDF(true)}
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto mt-4 md:mt-0"
+                >
+                  Экспорт всего списка в PDF
+                </button>
+              </div>
+            </div>
+          )}
+
+          {savedResults.length > 0 && (
+            <div className="mt-10">
+              <h2 className="text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text">Сохранённые варианты:</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {savedResults.map(fitting => (
+                  <div
+                    key={fitting.id}
+                    className="bg-gray-700 rounded-xl shadow-md p-4 hover:bg-gray-600 transition duration-300"
+                  >
+                    <h3 className="text-xl font-semibold text-white">{fitting.name}</h3>
+                    <p className="text-gray-300">Цена: {fitting.price} руб.</p>
+                    <p className="text-gray-300">Бренд: {fitting.brand}</p>
                   </div>
                 ))}
               </div>
