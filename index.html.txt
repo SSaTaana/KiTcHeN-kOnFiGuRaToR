@@ -55,10 +55,32 @@
       position: fixed;
       top: 0;
       width: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(5px);
+      background: transparent;
       padding: 1rem 0;
       z-index: 10;
+    }
+    .tab-buttons {
+      position: fixed;
+      top: 4rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+    .tab-button {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .tab-button.active {
+      background: rgba(79, 70, 229, 0.3);
+    }
+    .tab-content {
+      margin-top: 6rem;
     }
     .tooltip {
       position: relative;
@@ -66,22 +88,22 @@
     .tooltip .tooltip-text {
       visibility: hidden;
       width: 200px;
-      background-color: rgba(0, 0, 0, 0.9);
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #ccc;
+      text-align: left;
+      border-radius: 4px;
       padding: 5px;
       position: absolute;
       z-index: 1;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
+      left: -220px;
+      top: 50%;
+      transform: translateY(-50%);
       opacity: 0;
       transition: opacity 0.3s;
     }
     .tooltip:hover .tooltip-text {
       visibility: visible;
-      opacity: 1;
+      opacity: 0.9;
     }
     @keyframes edgeGlow {
       0% { opacity: 0.3; transform: translateY(-10%); }
@@ -116,6 +138,30 @@
         font-size: 0.9rem;
         padding: 0.5rem;
       }
+      .tab-buttons {
+        top: 3rem;
+        right: 0.5rem;
+      }
+    }
+    .about-container {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(0, 0, 0, 0.8));
+      border-radius: 1.5rem;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      text-align: center;
+      max-width: 50rem;
+      margin: 6rem auto;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .about-container h2 {
+      font-size: 2rem;
+      color: #d1c4e9;
+      margin-bottom: 1rem;
+    }
+    .about-container p {
+      font-size: 1.1rem;
+      color: #b3e5fc;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -138,35 +184,30 @@
             "configurator_title": "Конфигуратор мебельной фурнитуры",
             "type_label": "Тип фурнитуры",
             "type_placeholder": "Выберите тип",
+            "type_tooltip": "Выберите тип фурнитуры, например, петли, ручки или направляющие.",
             "brand_label": "Бренд",
             "brand_placeholder": "Выберите бренд",
+            "brand_tooltip": "Выберите известного производителя фурнитуры, например, Blum или Hettich.",
             "specific_option_label": "Дополнительные опции для",
             "specific_option_placeholder": "Выберите опцию",
+            "specific_option_tooltip": "Уточните характеристики, например, наличие доводчика или цвет.",
             "price_range_from": "Цена от (руб.)",
             "price_range_to": "Цена до (руб.)",
             "find_options": "Найти варианты",
             "results_title": "Подходящие варианты:",
+            "tab_results": "Результаты",
+            "tab_saved": "Сохранённые",
             "save": "Сохранить",
-            "compare": "Сравнить",
             "saved_results_title": "Сохранённые варианты:",
             "export_selected_pdf": "Экспорт выбранных в PDF",
             "export_all_pdf": "Экспорт всего списка в PDF",
             "no_match": "Точного совпадения не найдено. Показываем ближайший вариант.",
             "price_disclaimer": "*Данная цена может варьироваться в зависимости от выбора продавца или поставщика",
-            "compare_title": "Сравнение товаров",
-            "name": "Название",
-            "type": "Тип",
-            "subtype": "Подтип",
-            "option": "Опция",
-            "brand": "Бренд",
-            "price": "Цена (руб.)",
-            "description": "Описание",
-            "close": "Закрыть",
-            "type_tooltip": "Выберите тип фурнитуры, например, петли, ручки или направляющие.",
-            "specific_option_tooltip": "Уточните дополнительные характеристики, например, наличие доводчика.",
-            "brand_tooltip": "Выберите производителя фурнитуры.",
+            "about_title": "О нас",
+            "about_text": "Мы представляем свой конфигуратор, который может помочь вам с первичными видами и типами определенной мебельной фурнитуры, поможем узнать среднюю цену, анализируя разные сайты поставщиков и продавцов. Наша цель — упростить ваш выбор, предоставляя актуальную информацию и удобный интерфейс для поиска идеального решения.",
             "nav_home": "Главная",
             "nav_configurator": "Конфигуратор",
+            "nav_about": "О нас",
             "lang_ru": "Русский",
             "lang_en": "English"
           }
@@ -179,35 +220,30 @@
             "configurator_title": "Furniture Fittings Configurator",
             "type_label": "Fitting Type",
             "type_placeholder": "Select type",
+            "type_tooltip": "Select the type of fitting, e.g., hinges, handles, or guides.",
             "brand_label": "Brand",
             "brand_placeholder": "Select brand",
+            "brand_tooltip": "Select a known manufacturer, e.g., Blum or Hettich.",
             "specific_option_label": "Additional options for",
             "specific_option_placeholder": "Select option",
+            "specific_option_tooltip": "Specify features, e.g., soft-close mechanism or color.",
             "price_range_from": "Price from (RUB)",
             "price_range_to": "Price to (RUB)",
             "find_options": "Find Options",
             "results_title": "Matching Options:",
+            "tab_results": "Results",
+            "tab_saved": "Saved",
             "save": "Save",
-            "compare": "Compare",
             "saved_results_title": "Saved Options:",
             "export_selected_pdf": "Export Selected to PDF",
             "export_all_pdf": "Export Full List to PDF",
             "no_match": "No exact match found. Showing the closest option.",
             "price_disclaimer": "*This price may vary depending on the seller or supplier",
-            "compare_title": "Compare Items",
-            "name": "Name",
-            "type": "Type",
-            "subtype": "Subtype",
-            "option": "Option",
-            "brand": "Brand",
-            "price": "Price (RUB)",
-            "description": "Description",
-            "close": "Close",
-            "type_tooltip": "Select the type of fitting, e.g., hinges, handles, or guides.",
-            "specific_option_tooltip": "Specify additional features, e.g., with a soft-close mechanism.",
-            "brand_tooltip": "Select the manufacturer of the fitting.",
+            "about_title": "About Us",
+            "about_text": "We present our configurator, which can help you with initial types and categories of specific furniture fittings, assisting you in determining average prices by analyzing various supplier and seller websites. Our goal is to simplify your selection process by providing up-to-date information and an intuitive interface for finding the perfect solution.",
             "nav_home": "Home",
             "nav_configurator": "Configurator",
+            "nav_about": "About Us",
             "lang_ru": "Русский",
             "lang_en": "English"
           }
@@ -224,7 +260,7 @@
       };
 
       return (
-        React.createElement('nav', { className: 'navbar flex justify-center gap-6' },
+        React.createElement('nav', { className: 'navbar flex justify-center gap-6 bg-gray-900 bg-opacity-0' },
           React.createElement('a', {
             href: '#',
             onClick: () => setCurrentPage('welcome'),
@@ -237,7 +273,13 @@
             className: 'text-white hover:text-indigo-400 transition duration-200',
             'data-i18n': 'nav_configurator'
           }, 'Конфигуратор'),
-          React.createElement('div', { className: 'absolute right-4 flex gap-2' },
+          React.createElement('a', {
+            href: '#',
+            onClick: () => setCurrentPage('about'),
+            className: 'text-white hover:text-indigo-400 transition duration-200',
+            'data-i18n': 'nav_about'
+          }, 'О нас'),
+          React.createElement('div', { className: 'flex gap-2' },
             React.createElement('button', {
               onClick: () => changeLanguage('ru'),
               className: 'text-white hover:text-indigo-400 transition duration-200',
@@ -277,8 +319,7 @@
       const [priceRange, setPriceRange] = useState({ min: '', max: '' });
       const [results, setResults] = useState([]);
       const [savedResults, setSavedResults] = useState([]);
-      const [compareItems, setCompareItems] = useState([]);
-      const [showCompare, setShowCompare] = useState(false);
+      const [activeTab, setActiveTab] = useState('results');
       const [error, setError] = useState('');
 
       const fittingsDatabase = [
@@ -291,57 +332,7 @@
         { id: 7, name: "Ручка круглая классическая", type: "Ручка", subtype: "Круглая", mechanism: "Без доводчика", specificOption: "Классическая", brand: "Blum", price: 300, description: "Классическая круглая ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
         { id: 8, name: "Ручка длинная современная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "Hettich", price: 400, description: "Современная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
         { id: 9, name: "Ручка квадратная push-to-open", type: "Ручка", subtype: "Квадратная", mechanism: "Push-to-open", specificOption: "Скоба", brand: "Hafele", price: 600, description: "Квадратная ручка-скоба с push-механизмом.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 10, name: "Крепление угловое базовое", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Базовое", brand: "Hafele", price: 400, description: "Базовое угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 11, name: "Крепление скрытое регулируемое", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Grass", price: 500, description: "Регулируемое скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 12, name: "Петля угловая усиленная", type: "Петля", subtype: "Угловая", mechanism: "Без доводчика", specificOption: "Усиленная", brand: "Grass", price: 600, description: "Усиленная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 13, name: "Петля накладная премиум", type: "Петля", subtype: "Накладная", mechanism: "С доводчиком", specificOption: "С доводчиком", brand: "FGV", price: 850, description: "Премиум накладная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 14, name: "Направляющая роликовая лёгкая", type: "Направляющая", subtype: "Роликовая", mechanism: "Без доводчика", specificOption: "Лёгкая", brand: "FGV", price: 1200, description: "Лёгкая роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 15, name: "Направляющая шариковая усиленная", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Blum", price: 2200, description: "Усиленная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 16, name: "Ручка круглая винтажная", type: "Ручка", subtype: "Круглая", mechanism: "Без доводчика", specificOption: "Винтажная", brand: "Hettich", price: 500, description: "Винтажная круглая ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 17, name: "Ручка длинная хромированная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "Hafele", price: 450, description: "Хромированная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 18, name: "Крепление угловое регулируемое", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Grass", price: 600, description: "Регулируемое угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 19, name: "Петля декоративная угловая", type: "Петля", subtype: "Угловая", mechanism: "Без доводчика", specificOption: "Декоративная", brand: "Blum", price: 850, description: "Декоративная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 20, name: "Петля усиленная врезная", type: "Петля", subtype: "Врезная", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Hettich", price: 650, description: "Усиленная врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 21, name: "Направляющая роликовая лёгкая+", type: "Направляющая", subtype: "Роликовая", mechanism: "Без доводчика", specificOption: "Лёгкая", brand: "FGV", price: 1300, description: "Улучшенная лёгкая роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 22, name: "Ручка квадратная эргономичная", type: "Ручка", subtype: "Квадратная", mechanism: "Push-to-open", specificOption: "Скоба", brand: "Blum", price: 700, description: "Эргономичная квадратная ручка-скоба.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 23, name: "Петля скрытая врезная", type: "Петля", subtype: "Врезная", mechanism: "Push-to-open", specificOption: "Скрытая", brand: "Hettich", price: 1100, description: "Скрытая врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 24, name: "Направляющая шариковая декоративная", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Декоративная", brand: "Hafele", price: 1700, description: "Декоративная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 25, name: "Ручка круглая винтажная+", type: "Ручка", subtype: "Круглая", mechanism: "Без доводчика", specificOption: "Винтажная", brand: "Grass", price: 350, description: "Улучшенная винтажная круглая ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 26, name: "Крепление потолочное регулируемое", type: "Крепление", subtype: "Потолочное", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Hettich", price: 550, description: "Регулируемое потолочное крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 27, name: "Петля двойная угловая", type: "Петля", subtype: "Угловая", mechanism: "С доводчиком", specificOption: "Двойная", brand: "Hafele", price: 950, description: "Двойная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 28, name: "Направляющая роликовая мягкая", type: "Направляющая", subtype: "Роликовая", mechanism: "Push-to-open", specificOption: "Мягкая", brand: "Grass", price: 1900, description: "Мягкая роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 29, name: "Ручка длинная дизайнерская", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "FGV", price: 600, description: "Дизайнерская длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 30, name: "Крепление угловое регулируемое+", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Hafele", price: 700, description: "Улучшенное регулируемое угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 31, name: "Петля мини угловая", type: "Петля", subtype: "Угловая", mechanism: "Push-to-open", specificOption: "Мини", brand: "Grass", price: 550, description: "Мини-угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 32, name: "Направляющая шариковая двойная", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Двойная", brand: "FGV", price: 2300, description: "Двойная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 33, name: "Ручка квадратная хромированная", type: "Ручка", subtype: "Квадратная", mechanism: "Без доводчика", specificOption: "Скоба", brand: "Blum", price: 450, description: "Хромированная квадратная ручка-скоба.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 34, name: "Крепление скрытое улучшенное", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Улучшенное", brand: "FGV", price: 600, description: "Улучшенное скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 35, name: "Петля премиум врезная", type: "Петля", subtype: "Врезная", mechanism: "Push-to-open", specificOption: "Премиум", brand: "Blum", price: 1300, description: "Премиум-врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 36, name: "Направляющая шариковая усиленная+", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Hettich", price: 2500, description: "Усиленная шариковая направляющая премиум-класса.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 37, name: "Ручка овальная дизайнерская", type: "Ручка", subtype: "Овальная", mechanism: "Без доводчика", specificOption: "Дизайнерская", brand: "Hafele", price: 800, description: "Дизайнерская овальная ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 38, name: "Крепление универсальное регулируемое", type: "Крепление", subtype: "Универсальное", mechanism: "Без доводчика", specificOption: "Регулируемое", brand: "Blum", price: 750, description: "Регулируемое универсальное крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 39, name: "Петля угловая компактная", type: "Петля", subtype: "Угловая", mechanism: "Без доводчика", specificOption: "Компактная", brand: "Hettich", price: 520, description: "Компактная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 40, name: "Направляющая скрытого монтажа лёгкая", type: "Направляющая", subtype: "Скрытого монтажа", mechanism: "Push-to-open", specificOption: "Лёгкая", brand: "Grass", price: 1750, description: "Лёгкая скрытая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 41, name: "Ручка длинная минималистичная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "FGV", price: 550, description: "Минималистичная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 42, name: "Крепление угловое усиленное", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Усиленное", brand: "Blum", price: 650, description: "Усиленное угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 43, name: "Петля врезная стандартная", type: "Петля", subtype: "Врезная", mechanism: "С доводчиком", specificOption: "Стандартная", brand: "Hafele", price: 900, description: "Стандартная врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 44, name: "Направляющая роликовая усиленная", type: "Направляющая", subtype: "Роликовая", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Blum", price: 2000, description: "Усиленная роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 45, name: "Ручка круглая современная", type: "Ручка", subtype: "Круглая", mechanism: "Без доводчика", specificOption: "Современная", brand: "Hettich", price: 400, description: "Современная круглая ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 46, name: "Крепление скрытое компактное", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Компактное", brand: "Grass", price: 450, description: "Компактное скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 47, name: "Петля угловая декоративная+", type: "Петля", subtype: "Угловая", mechanism: "Push-to-open", specificOption: "Декоративная", brand: "FGV", price: 1000, description: "Улучшенная декоративная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 48, name: "Направляющая шариковая компактная", type: "Направляющая", subtype: "Шариковая", mechanism: "Без доводчика", specificOption: "Компактная", brand: "Blum", price: 1600, description: "Компактная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 49, name: "Ручка овальная винтажная", type: "Ручка", subtype: "Овальная", mechanism: "Без доводчика", specificOption: "Винтажная", brand: "Hafele", price: 600, description: "Винтажная овальная ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 50, name: "Крепление угловое стандартное", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Стандартное", brand: "Hettich", price: 500, description: "Стандартное угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 51, name: "Петля врезная премиум+", type: "Петля", subtype: "Врезная", mechanism: "С доводчиком", specificOption: "Премиум", brand: "Grass", price: 1400, description: "Улучшенная премиум-врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 52, name: "Направляющая скрытого монтажа усиленная", type: "Направляющая", subtype: "Скрытого монтажа", mechanism: "Push-to-open", specificOption: "Усиленная", brand: "FGV", price: 2100, description: "Усиленная скрытая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 53, name: "Ручка длинная эргономичная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "Blum", price: 650, description: "Эргономичная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 54, name: "Крепление потолочное компактное", type: "Крепление", subtype: "Потолочное", mechanism: "Без доводчика", specificOption: "Компактное", brand: "Hafele", price: 480, description: "Компактное потолочное крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 55, name: "Петля угловая стандартная+", type: "Петля", subtype: "Угловая", mechanism: "С доводчиком", specificOption: "Стандартная", brand: "Hettich", price: 720, description: "Улучшенная стандартная угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 56, name: "Направляющая роликовая декоративная+", type: "Направляющая", subtype: "Роликовая", mechanism: "С доводчиком", specificOption: "Декоративная", brand: "Grass", price: 1850, description: "Улучшенная декоративная роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 57, name: "Ручка квадратная минималистичная", type: "Ручка", subtype: "Квадратная", mechanism: "Push-to-open", specificOption: "Скоба", brand: "FGV", price: 700, description: "Минималистичная квадратная ручка-скоба.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 58, name: "Крепление скрытое стандартное", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Стандартное", brand: "Blum", price: 520, description: "Стандартное скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 59, name: "Петля накладная компактная", type: "Петля", subtype: "Накладная", mechanism: "Без доводчика", specificOption: "Компактная", brand: "Hafele", price: 600, description: "Компактная накладная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 60, name: "Направляющая шариковая лёгкая", type: "Направляющая", subtype: "Шариковая", mechanism: "Без доводчика", specificOption: "Лёгкая", brand: "Hettich", price: 1400, description: "Лёгкая шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" }
+        { id: 10, name: "Крепление угловое базовое", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Базовое", brand: "Hafele", price: 400, description: "Базовое угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" }
       ];
 
       const specificOptions = {
@@ -401,17 +392,10 @@
         }
       };
 
-      const toggleCompare = (fitting) => {
-        if (compareItems.some(item => item.id === fitting.id)) {
-          setCompareItems(compareItems.filter(item => item.id !== fitting.id));
-        } else if (compareItems.length < 3) {
-          setCompareItems([...compareItems, fitting]);
-        }
-      };
-
       const handlePriceRangeChange = (e) => {
         const { name, value } = e.target;
-        setPriceRange(prev => ({ ...prev, [name]: value }));
+        const newValue = value === '' ? '' : Math.max(0, Number(value));
+        setPriceRange(prev => ({ ...prev, [name]: newValue }));
       };
 
       return (
@@ -437,7 +421,7 @@
             ),
             React.createElement('div', { className: 'w-full md:w-1/3 tooltip' },
               React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'brand_label' }, 'Бренд'),
-              React.createElement('span', { className: 'tooltip-text', 'data-i18n': 'brand_tooltip' }, 'Выберите производителя фурнитуры.'),
+              React.createElement('span', { className: 'tooltip-text', 'data-i18n': 'brand_tooltip' }, 'Выберите известного производителя фурнитуры, например, Blum или Hettich.'),
               React.createElement('select', {
                 value: brand,
                 onChange: (e) => setBrand(e.target.value),
@@ -459,7 +443,7 @@
                 value: priceRange.min,
                 onChange: handlePriceRangeChange,
                 className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200',
-                placeholder: '300'
+                min: '0'
               })
             ),
             React.createElement('div', { className: 'w-full md:w-1/3' },
@@ -470,13 +454,13 @@
                 value: priceRange.max,
                 onChange: handlePriceRangeChange,
                 className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200',
-                placeholder: '1000'
+                min: '0'
               })
             )
           ),
           type && React.createElement('div', { className: 'mb-8 text-center tooltip' },
             React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'specific_option_label' }, `Дополнительные опции для ${type}`),
-            React.createElement('span', { className: 'tooltip-text', 'data-i18n': 'specific_option_tooltip' }, 'Уточните дополнительные характеристики, например, наличие доводчика.'),
+            React.createElement('span', { className: 'tooltip-text', 'data-i18n': 'specific_option_tooltip' }, 'Уточните характеристики, например, наличие доводчика или цвет.'),
             React.createElement('select', {
               value: specificOption,
               onChange: (e) => setSpecificOption(e.target.value),
@@ -496,121 +480,96 @@
               'data-i18n': 'find_options'
             }, 'Найти варианты')
           ),
-          results.length > 0 && React.createElement('div', null,
-            React.createElement('h2', {
-              className: 'text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text',
-              'data-i18n': 'results_title'
-            }, 'Подходящие варианты:'),
-            React.createElement('div', { className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' },
-              results.map(fitting =>
-                React.createElement('div', {
-                  key: fitting.id,
-                  className: 'bg-gray-900 rounded-xl shadow-xl p-4 hover:bg-gray-800 hover:shadow-2xl transition-all duration-300 transform hover:scale-105'
-                },
-                  React.createElement('img', {
-                    src: fitting.image,
-                    alt: fitting.name,
-                    className: 'w-full h-40 object-cover rounded-lg mb-4'
-                  }),
-                  React.createElement('h3', { className: 'text-xl font-semibold text-white' }, fitting.name),
-                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'type' }, `${i18next.t('type')}: ${fitting.type} (${fitting.subtype})`),
-                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'option' }, `${i18next.t('option')}: ${fitting.specificOption}`),
-                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'brand' }, `${i18next.t('brand')}: ${fitting.brand}`),
-                  React.createElement('p', { className: 'text-purple-500 font-bold mt-2', 'data-i18n': 'price' }, `${i18next.t('price')}: ${fitting.price} руб.`),
-                  React.createElement('p', { className: 'text-gray-400 mt-2', 'data-i18n': 'description' }, `${i18next.t('description')}: ${fitting.description}`),
-                  React.createElement('div', { className: 'flex gap-2 mt-4' },
-                    React.createElement('button', {
-                      onClick: () => saveResult(fitting),
-                      className: 'w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-md hover:from-blue-700 hover:to-blue-800 transition duration-200',
-                      'data-i18n': 'save'
-                    }, 'Сохранить'),
-                    React.createElement('button', {
-                      onClick: () => toggleCompare(fitting),
-                      className: `w-full px-4 py-2 rounded-md text-white transition duration-200 ${compareItems.some(item => item.id === fitting.id) ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`,
-                      'data-i18n': 'compare'
-                    }, 'Сравнить')
-                  ),
-                  React.createElement('p', { className: 'text-xs text-gray-500 mt-2', 'data-i18n': 'price_disclaimer' }, '*Данная цена может варьироваться в зависимости от выбора продавца или поставщика')
-                )
-              )
-            ),
-            React.createElement('div', { className: 'flex flex-col md:flex-row justify-center mt-8 gap-4' },
-              React.createElement('button', {
-                onClick: () => saveToPDF(false),
-                className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto',
-                'data-i18n': 'export_selected_pdf'
-              }, 'Экспорт выбранных в PDF'),
-              React.createElement('button', {
-                onClick: () => saveToPDF(true),
-                className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto mt-4 md:mt-0',
-                'data-i18n': 'export_all_pdf'
-              }, 'Экспорт всего списка в PDF')
-            )
-          ),
-          savedResults.length > 0 && React.createElement('div', { className: 'mt-10' },
-            React.createElement('h2', {
-              className: 'text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text',
-              'data-i18n': 'saved_results_title'
-            }, 'Сохранённые варианты:'),
-            React.createElement('div', { className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' },
-              savedResults.map(fitting =>
-                React.createElement('div', {
-                  key: fitting.id,
-                  className: 'bg-gray-700 rounded-xl shadow-md p-4 hover:bg-gray-600 transition duration-300'
-                },
-                  React.createElement('h3', { className: 'text-xl font-semibold text-white' }, fitting.name),
-                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'price' }, `${i18next.t('price')}: ${fitting.price} руб.`),
-                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'brand' }, `${i18next.t('brand')}: ${fitting.brand}`),
-                  React.createElement('button', {
-                    onClick: () => toggleCompare(fitting),
-                    className: `mt-2 w-full px-4 py-2 rounded-md text-white transition duration-200 ${compareItems.some(item => item.id === fitting.id) ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`,
-                    'data-i18n': 'compare'
-                  }, 'Сравнить')
-                )
-              )
-            ),
-            compareItems.length > 0 && React.createElement('div', { className: 'flex justify-center mt-4' },
-              React.createElement('button', {
-                onClick: () => setShowCompare(true),
-                className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105',
-                'data-i18n': 'compare_title'
-              }, 'Сравнение товаров')
-            )
-          ),
-          showCompare && compareItems.length > 0 && React.createElement('div', { className: 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-20' },
-            React.createElement('div', { className: 'bg-gray-900 rounded-xl p-6 max-w-4xl w-full overflow-x-auto' },
-              React.createElement('h2', { className: 'text-2xl font-bold text-white mb-4', 'data-i18n': 'compare_title' }, 'Сравнение товаров'),
-              React.createElement('table', { className: 'w-full text-left text-gray-300' },
-                React.createElement('thead', null,
-                  React.createElement('tr', { className: 'border-b border-gray-700' },
-                    React.createElement('th', { className: 'p-2', 'data-i18n': 'name' }, 'Название'),
-                    React.createElement('th', { className: 'p-2', 'data-i18n': 'type' }, 'Тип'),
-                    React.createElement('th', { className: 'p-2', 'data-i18n': 'subtype' }, 'Подтип'),
-                    React.createElement('th', { className: 'p-2', 'data-i18n': 'option' }, 'Опция'),
-                    React.createElement('th', { className: 'p-2', 'data-i18n': 'brand' }, 'Бренд'),
-                    React.createElement('th', { className: 'p-2', 'data-i18n': 'price' }, 'Цена (руб.)')
-                  )
-                ),
-                React.createElement('tbody', null,
-                  compareItems.map(item =>
-                    React.createElement('tr', { key: item.id, className: 'border-b border-gray-700' },
-                      React.createElement('td', { className: 'p-2' }, item.name),
-                      React.createElement('td', { className: 'p-2' }, item.type),
-                      React.createElement('td', { className: 'p-2' }, item.subtype),
-                      React.createElement('td', { className: 'p-2' }, item.specificOption),
-                      React.createElement('td', { className: 'p-2' }, item.brand),
-                      React.createElement('td', { className: 'p-2' }, item.price)
-                    )
+          React.createElement('div', { className: 'tab-content' },
+            activeTab === 'results' && results.length > 0 && React.createElement('div', null,
+              React.createElement('h2', {
+                className: 'text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text',
+                'data-i18n': 'results_title'
+              }, 'Подходящие варианты:'),
+              React.createElement('div', { className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' },
+                results.map(fitting =>
+                  React.createElement('div', {
+                    key: fitting.id,
+                    className: 'bg-gray-900 rounded-xl shadow-xl p-4 hover:bg-gray-800 hover:shadow-2xl transition-all duration-300 transform hover:scale-105'
+                  },
+                    React.createElement('img', {
+                      src: fitting.image,
+                      alt: fitting.name,
+                      className: 'w-full h-40 object-cover rounded-lg mb-4'
+                    }),
+                    React.createElement('h3', { className: 'text-xl font-semibold text-white' }, fitting.name),
+                    React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'type' }, `${i18next.t('type')}: ${fitting.type} (${fitting.subtype})`),
+                    React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'option' }, `${i18next.t('option')}: ${fitting.specificOption}`),
+                    React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'brand' }, `${i18next.t('brand')}: ${fitting.brand}`),
+                    React.createElement('p', { className: 'text-purple-500 font-bold mt-2', 'data-i18n': 'price' }, `${i18next.t('price')}: ${fitting.price} руб.`),
+                    React.createElement('p', { className: 'text-gray-400 mt-2', 'data-i18n': 'description' }, `${i18next.t('description')}: ${fitting.description}`),
+                    React.createElement('div', { className: 'flex gap-2 mt-4' },
+                      React.createElement('button', {
+                        onClick: () => saveResult(fitting),
+                        className: 'w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-md hover:from-blue-700 hover:to-blue-800 transition duration-200',
+                        'data-i18n': 'save'
+                      }, 'Сохранить')
+                    ),
+                    React.createElement('p', { className: 'text-xs text-gray-500 mt-2', 'data-i18n': 'price_disclaimer' }, '*Данная цена может варьироваться в зависимости от выбора продавца или поставщика')
                   )
                 )
               ),
-              React.createElement('button', {
-                onClick: () => setShowCompare(false),
-                className: 'mt-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105',
-                'data-i18n': 'close'
-              }, 'Закрыть')
+              React.createElement('div', { className: 'flex flex-col md:flex-row justify-center mt-8 gap-4' },
+                React.createElement('button', {
+                  onClick: () => saveToPDF(false),
+                  className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto',
+                  'data-i18n': 'export_selected_pdf'
+                }, 'Экспорт выбранных в PDF'),
+                React.createElement('button', {
+                  onClick: () => saveToPDF(true),
+                  className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto mt-4 md:mt-0',
+                  'data-i18n': 'export_all_pdf'
+                }, 'Экспорт всего списка в PDF')
+              )
+            ),
+            activeTab === 'saved' && savedResults.length > 0 && React.createElement('div', null,
+              React.createElement('h2', {
+                className: 'text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text',
+                'data-i18n': 'saved_results_title'
+              }, 'Сохранённые варианты:'),
+              React.createElement('div', { className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' },
+                savedResults.map(fitting =>
+                  React.createElement('div', {
+                    key: fitting.id,
+                    className: 'bg-gray-700 rounded-xl shadow-md p-4 hover:bg-gray-600 transition duration-300'
+                  },
+                    React.createElement('h3', { className: 'text-xl font-semibold text-white' }, fitting.name),
+                    React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'price' }, `${i18next.t('price')}: ${fitting.price} руб.`),
+                    React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'brand' }, `${i18next.t('brand')}: ${fitting.brand}`)
+                  )
+                )
+              )
             )
+          ),
+          React.createElement('div', { className: 'tab-buttons' },
+            React.createElement('button', {
+              className: `tab-button ${activeTab === 'results' ? 'active' : ''}`,
+              onClick: () => setActiveTab('results'),
+              'data-i18n': 'tab_results'
+            }, 'Результаты'),
+            React.createElement('button', {
+              className: `tab-button ${activeTab === 'saved' ? 'active' : ''}`,
+              onClick: () => setActiveTab('saved'),
+              'data-i18n': 'tab_saved'
+            }, 'Сохранённые')
           )
+        )
+      );
+    };
+
+    const AboutPage = () => {
+      return (
+        React.createElement('div', { className: 'about-container' },
+          React.createElement('h2', {
+            className: 'text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent',
+            'data-i18n': 'about_title'
+          }, 'О нас'),
+          React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'about_text' }, 'Мы представляем свой конфигуратор, который может помочь вам с первичными видами и типами определенной мебельной фурнитуры, поможем узнать среднюю цену, анализируя разные сайты поставщиков и продавцов. Наша цель — упростить ваш выбор, предоставляя актуальную информацию и удобный интерфейс для поиска идеального решения.')
         )
       );
     };
@@ -628,7 +587,8 @@
         React.createElement(React.Fragment, null,
           React.createElement(Navbar, { setCurrentPage: setCurrentPage }),
           currentPage === 'welcome' && React.createElement(WelcomePage, { onNavigate: () => setCurrentPage('configurator') }),
-          currentPage === 'configurator' && React.createElement(ConfiguratorPage, null)
+          currentPage === 'configurator' && React.createElement(ConfiguratorPage, null),
+          currentPage === 'about' && React.createElement(AboutPage, null)
         )
       );
     };
