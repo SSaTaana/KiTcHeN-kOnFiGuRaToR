@@ -1,16 +1,16 @@
-
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Конфигуратор мебельной фурнитуры</title>
-  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/i18next@23.11.5/dist/umd/i18next.min.js"></script>
   <style>
     body {
       background: linear-gradient(135deg, #1a1a1a, #000000);
@@ -20,7 +20,7 @@
       position: relative;
       overflow-x: hidden;
     }
-    .container-overlay {
+    .container-overlay, .welcome-container {
       background: rgba(255, 255, 255, 0.05);
       border-radius: 1.5rem;
       padding: 1.5rem;
@@ -28,7 +28,12 @@
       backdrop-filter: blur(5px);
       max-width: 80rem;
       width: 100%;
-      margin: 0 auto;
+      margin: 2rem auto;
+    }
+    .welcome-container {
+      max-width: 40rem;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
     }
     .edge-animation {
       position: fixed;
@@ -46,15 +51,51 @@
       right: 0;
       background: linear-gradient(270deg, rgba(79, 70, 229, 0.2), transparent);
     }
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      padding: 1rem 0;
+      z-index: 10;
+    }
+    .tooltip {
+      position: relative;
+    }
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: 200px;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
     @keyframes edgeGlow {
       0% { opacity: 0.3; transform: translateY(-10%); }
       50% { opacity: 0.8; transform: translateY(10%); }
       100% { opacity: 0.3; transform: translateY(-10%); }
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     @media (max-width: 640px) {
-      .container-overlay {
+      .container-overlay, .welcome-container {
         padding: 1rem;
-        margin: 0 0.5rem;
+        margin: 4rem 0.5rem;
       }
       h1 {
         font-size: 1.75rem;
@@ -68,23 +109,157 @@
       .edge-animation {
         width: 20px;
       }
+      .navbar {
+        padding: 0.5rem 0;
+      }
+      .navbar a {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+      }
     }
   </style>
 </head>
-<body className="flex flex-col items-center justify-center min-h-screen p-4">
+<body className="flex flex-col min-h-screen p-4">
   <div className="edge-animation left"></div>
   <div className="edge-animation right"></div>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect } = React;
 
-    const App = () => {
+    // Инициализация i18next
+    i18next.init({
+      lng: 'ru',
+      resources: {
+        ru: {
+          translation: {
+            "welcome_title": "Добро пожаловать!",
+            "welcome_text": "На нашем сайте вы можете подобрать идеальную мебельную фурнитуру с помощью удобного конфигуратора.",
+            "go_to_configurator": "Перейти в конфигуратор",
+            "configurator_title": "Конфигуратор мебельной фурнитуры",
+            "type_label": "Тип фурнитуры",
+            "type_placeholder": "Выберите тип",
+            "brand_label": "Бренд",
+            "brand_placeholder": "Выберите бренд",
+            "specific_option_label": "Дополнительные опции для",
+            "specific_option_placeholder": "Выберите опцию",
+            "price_range_from": "Цена от (руб.)",
+            "price_range_to": "Цена до (руб.)",
+            "find_options": "Найти варианты",
+            "results_title": "Подходящие варианты:",
+            "save": "Сохранить",
+            "compare": "Сравнить",
+            "saved_results_title": "Сохранённые варианты:",
+            "export_selected_pdf": "Экспорт выбранных в PDF",
+            "export_all_pdf": "Экспорт всего списка в PDF",
+            "no_match": "Точного совпадения не найдено. Показываем ближайший вариант.",
+            "price_disclaimer": "*Данная цена может варьироваться в зависимости от выбора продавца или поставщика",
+            "compare_title": "Сравнение товаров",
+            "name": "Название",
+            "type": "Тип",
+            "subtype": "Подтип",
+            "option": "Опция",
+            "brand": "Бренд",
+            "price": "Цена (руб.)",
+            "description": "Описание",
+            "close": "Закрыть",
+            "type_tooltip": "Выберите тип фурнитуры, например, петли, ручки или направляющие.",
+            "specific_option_tooltip": "Уточните дополнительные характеристики, например, наличие доводчика.",
+            "brand_tooltip": "Выберите производителя фурнитуры.",
+            "nav_home": "Главная",
+            "nav_configurator": "Конфигуратор",
+            "lang_ru": "Русский",
+            "lang_en": "English"
+          }
+        },
+        en: {
+          translation: {
+            "welcome_title": "Welcome!",
+            "welcome_text": "On our website, you can find the perfect furniture fittings using our convenient configurator.",
+            "go_to_configurator": "Go to Configurator",
+            "configurator_title": "Furniture Fittings Configurator",
+            "type_label": "Fitting Type",
+            "type_placeholder": "Select type",
+            "brand_label": "Brand",
+            "brand_placeholder": "Select brand",
+            "specific_option_label": "Additional options for",
+            "specific_option_placeholder": "Select option",
+            "price_range_from": "Price from (RUB)",
+            "price_range_to": "Price to (RUB)",
+            "find_options": "Find Options",
+            "results_title": "Matching Options:",
+            "save": "Save",
+            "compare": "Compare",
+            "saved_results_title": "Saved Options:",
+            "export_selected_pdf": "Export Selected to PDF",
+            "export_all_pdf": "Export Full List to PDF",
+            "no_match": "No exact match found. Showing the closest option.",
+            "price_disclaimer": "*This price may vary depending on the seller or supplier",
+            "compare_title": "Compare Items",
+            "name": "Name",
+            "type": "Type",
+            "subtype": "Subtype",
+            "option": "Option",
+            "brand": "Brand",
+            "price": "Price (RUB)",
+            "description": "Description",
+            "close": "Close",
+            "type_tooltip": "Select the type of fitting, e.g., hinges, handles, or guides.",
+            "specific_option_tooltip": "Specify additional features, e.g., with a soft-close mechanism.",
+            "brand_tooltip": "Select the manufacturer of the fitting.",
+            "nav_home": "Home",
+            "nav_configurator": "Configurator",
+            "lang_ru": "Русский",
+            "lang_en": "English"
+          }
+        }
+      }
+    });
+
+    const Navbar = ({ setCurrentPage }) => {
+      const changeLanguage = (lng) => {
+        i18next.changeLanguage(lng);
+        document.querySelectorAll('[data-i18n]').forEach(elem => {
+          elem.textContent = i18next.t(elem.getAttribute('data-i18n'));
+        });
+      };
+
+      return (
+        <nav className="navbar flex justify-center gap-6">
+          <a href="#" onClick={() => setCurrentPage('welcome')} className="text-white hover:text-indigo-400 transition duration-200" data-i18n="nav_home">Главная</a>
+          <a href="#" onClick={() => setCurrentPage('configurator')} className="text-white hover:text-indigo-400 transition duration-200" data-i18n="nav_configurator">Конфигуратор</a>
+          <div className="absolute right-4 flex gap-2">
+            <button onClick={() => changeLanguage('ru')} className="text-white hover:text-indigo-400 transition duration-200" data-i18n="lang_ru">Русский</button>
+            <button onClick={() => changeLanguage('en')} className="text-white hover:text-indigo-400 transition duration-200" data-i18n="lang_en">English</button>
+          </div>
+        </nav>
+      );
+    };
+
+    const WelcomePage = ({ onNavigate }) => {
+      return (
+        <div className="welcome-container">
+          <h1 className="text-4xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent" data-i18n="welcome_title">Добро пожаловать!</h1>
+          <p className="text-gray-300 mb-8" data-i18n="welcome_text">На нашем сайте вы можете подобрать идеальную мебельную фурнитуру с помощью удобного конфигуратора.</p>
+          <button
+            onClick={onNavigate}
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105"
+            data-i18n="go_to_configurator"
+          >
+            Перейти в конфигуратор
+          </button>
+        </div>
+      );
+    };
+
+    const ConfiguratorPage = () => {
       const [type, setType] = useState('');
-      const [mechanism, setMechanism] = useState('');
       const [specificOption, setSpecificOption] = useState('');
       const [brand, setBrand] = useState('');
+      const [priceRange, setPriceRange] = useState({ min: '', max: '' });
       const [results, setResults] = useState([]);
       const [savedResults, setSavedResults] = useState([]);
+      const [compareItems, setCompareItems] = useState([]);
+      const [showCompare, setShowCompare] = useState(false);
       const [error, setError] = useState('');
 
       const fittingsDatabase = [
@@ -147,22 +322,7 @@
         { id: 57, name: "Ручка квадратная минималистичная", type: "Ручка", subtype: "Квадратная", mechanism: "Push-to-open", specificOption: "Скоба", brand: "FGV", price: 700, description: "Минималистичная квадратная ручка-скоба.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
         { id: 58, name: "Крепление скрытое стандартное", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Стандартное", brand: "Blum", price: 520, description: "Стандартное скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
         { id: 59, name: "Петля накладная компактная", type: "Петля", subtype: "Накладная", mechanism: "Без доводчика", specificOption: "Компактная", brand: "Hafele", price: 600, description: "Компактная накладная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 60, name: "Направляющая шариковая лёгкая", type: "Направляющая", subtype: "Шариковая", mechanism: "Без доводчика", specificOption: "Лёгкая", brand: "Hettich", price: 1400, description: "Лёгкая шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 61, name: "Ручка овальная современная", type: "Ручка", subtype: "Овальная", mechanism: "Без доводчика", specificOption: "Современная", brand: "Grass", price: 550, description: "Современная овальная ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 62, name: "Крепление угловое декоративное", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Декоративное", brand: "FGV", price: 580, description: "Декоративное угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 63, name: "Петля врезная декоративная", type: "Петля", subtype: "Врезная", mechanism: "Push-to-open", specificOption: "Декоративная", brand: "Blum", price: 1100, description: "Декоративная врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 64, name: "Направляющая скрытого монтажа декоративная", type: "Направляющая", subtype: "Скрытого монтажа", mechanism: "С доводчиком", specificOption: "Декоративная", brand: "Hafele", price: 1900, description: "Декоративная скрытая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 65, name: "Ручка длинная винтажная", type: "Ручка", subtype: "Длинная", mechanism: "Без доводчика", specificOption: "Рейлинг", brand: "Hettich", price: 620, description: "Винтажная длинная ручка-рейлинг.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 66, name: "Крепление потолочное усиленное", type: "Крепление", subtype: "Потолочное", mechanism: "Без доводчика", specificOption: "Усиленное", brand: "Grass", price: 700, description: "Усиленное потолочное крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 67, name: "Петля угловая премиум+", type: "Петля", subtype: "Угловая", mechanism: "С доводчиком", specificOption: "Премиум", brand: "FGV", price: 1250, description: "Улучшенная премиум-угловая петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 68, name: "Направляющая роликовая компактная", type: "Направляющая", subtype: "Роликовая", mechanism: "Без доводчика", specificOption: "Компактная", brand: "Blum", price: 1550, description: "Компактная роликовая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 69, name: "Ручка квадратная дизайнерская", type: "Ручка", subtype: "Квадратная", mechanism: "Push-to-open", specificOption: "Скоба", brand: "Hafele", price: 750, description: "Дизайнерская квадратная ручка-скоба.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 70, name: "Крепление скрытое декоративное", type: "Крепление", subtype: "Скрытое", mechanism: "Без доводчика", specificOption: "Декоративное", brand: "Hettich", price: 560, description: "Декоративное скрытое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 71, name: "Петля накладная усиленная", type: "Петля", subtype: "Накладная", mechanism: "С доводчиком", specificOption: "Усиленная", brand: "Grass", price: 950, description: "Усиленная накладная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 72, name: "Направляющая шариковая декоративная+", type: "Направляющая", subtype: "Шариковая", mechanism: "С доводчиком", specificOption: "Декоративная", brand: "FGV", price: 2000, description: "Улучшенная декоративная шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 73, name: "Ручка овальная минималистичная", type: "Ручка", subtype: "Овальная", mechanism: "Без доводчика", specificOption: "Минималистичная", brand: "Blum", price: 580, description: "Минималистичная овальная ручка.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 74, name: "Крепление угловое компактное", type: "Крепление", subtype: "Угловое", mechanism: "Без доводчика", specificOption: "Компактное", brand: "Hafele", price: 490, description: "Компактное угловое крепление.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" },
-        { id: 75, name: "Петля врезная компактная", type: "Петля", subtype: "Врезная", mechanism: "Push-to-open", specificOption: "Компактная", brand: "Hettich", price: 880, description: "Компактная врезная петля.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" }
+        { id: 60, name: "Направляющая шариковая лёгкая", type: "Направляющая", subtype: "Шариковая", mechanism: "Без доводчика", specificOption: "Лёгкая", brand: "Hettich", price: 1400, description: "Лёгкая шариковая направляющая.", image: "https://via.placeholder.com/300x200/808080?text=Furniture+Part" }
       ];
 
       const specificOptions = {
@@ -175,15 +335,16 @@
       const findBestOptions = () => {
         const filteredFittings = fittingsDatabase.filter(fitting => {
           const typeMatch = type ? fitting.type === type : true;
-          const mechanismMatch = mechanism ? fitting.mechanism === mechanism : true;
           const specificOptionMatch = specificOption ? fitting.specificOption === specificOption : true;
           const brandMatch = brand ? fitting.brand === brand : true;
+          const priceMinMatch = priceRange.min ? fitting.price >= Number(priceRange.min) : true;
+          const priceMaxMatch = priceRange.max ? fitting.price <= Number(priceRange.max) : true;
 
-          return typeMatch && mechanismMatch && specificOptionMatch && brandMatch;
+          return typeMatch && specificOptionMatch && brandMatch && priceMinMatch && priceMaxMatch;
         });
 
         if (filteredFittings.length === 0) {
-          setError('Точного совпадения не найдено. Показываем ближайший вариант.');
+          setError(i18next.t('no_match'));
           const fallback = type ? fittingsDatabase.find(f => f.type === type) : fittingsDatabase[0];
           setResults([fallback]);
         } else {
@@ -196,16 +357,15 @@
         const content = allResults ? [...results, ...savedResults] : results;
         const docDefinition = {
           content: [
-            { text: allResults ? 'Полный список фурнитуры' : 'Результаты подбора фурнитуры', style: 'header' },
+            { text: allResults ? i18next.t('export_all_pdf') : i18next.t('export_selected_pdf'), style: 'header' },
             ...content.map(fitting => ({
               text: [
-                `Название: ${fitting.name}\n`,
-                `Тип: ${fitting.type} (${fitting.subtype})\n`,
-                `Механизм: ${fitting.mechanism}\n`,
-                `Опция: ${fitting.specificOption}\n`,
-                `Бренд: ${fitting.brand}\n`,
-                `Цена: ${fitting.price} руб.\n`,
-                `Описание: ${fitting.description}\n\n`
+                `${i18next.t('name')}: ${fitting.name}\n`,
+                `${i18next.t('type')}: ${fitting.type} (${fitting.subtype})\n`,
+                `${i18next.t('option')}: ${fitting.specificOption}\n`,
+                `${i18next.t('brand')}: ${fitting.brand}\n`,
+                `${i18next.t('price')}: ${fitting.price} руб.\n`,
+                `${i18next.t('description')}: ${fitting.description}\n\n`
               ]
             }))
           ],
@@ -217,48 +377,52 @@
       };
 
       const saveResult = (fitting) => {
-        setSavedResults([...savedResults, fitting]);
+        if (!savedResults.some(item => item.id === fitting.id)) {
+          setSavedResults([...savedResults, fitting]);
+        }
+      };
+
+      const toggleCompare = (fitting) => {
+        if (compareItems.some(item => item.id === fitting.id)) {
+          setCompareItems(compareItems.filter(item => item.id !== fitting.id));
+        } else if (compareItems.length < 3) {
+          setCompareItems([...compareItems, fitting]);
+        }
+      };
+
+      const handlePriceRangeChange = (e) => {
+        const { name, value } = e.target;
+        setPriceRange(prev => ({ ...prev, [name]: value }));
       };
 
       return (
         <div className="container-overlay">
-          <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent">Конфигуратор мебельной фурнитуры</h1>
+          <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent" data-i18n="configurator_title">Конфигуратор мебельной фурнитуры</h1>
 
           <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8">
-            <div className="w-full md:w-1/3">
-              <label className="block text-sm font-medium text-gray-200">Тип фурнитуры</label>
+            <div className="w-full md:w-1/3 tooltip">
+              <label className="block text-sm font-medium text-gray-200" data-i18n="type_label">Тип фурнитуры</label>
+              <span className="tooltip-text" data-i18n="type_tooltip">Выберите тип фурнитуры, например, петли, ручки или направляющие.</span>
               <select
                 value={type}
                 onChange={(e) => { setType(e.target.value); setSpecificOption(''); }}
                 className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
               >
-                <option value="">Выберите тип</option>
+                <option value="" data-i18n="type_placeholder">Выберите тип</option>
                 {[...new Set(fittingsDatabase.map(f => f.type))].map(t => (
                   <option key={t} value={t}>{t}</option>
                 ))}
               </select>
             </div>
-            <div className="w-full md:w-1/3">
-              <label className="block text-sm font-medium text-gray-200">Механизм</label>
-              <select
-                value={mechanism}
-                onChange={(e) => setMechanism(e.target.value)}
-                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
-              >
-                <option value="">Выберите механизм</option>
-                {[...new Set(fittingsDatabase.map(f => f.mechanism))].map(m => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
-            </div>
-            <div className="w-full md:w-1/3">
-              <label className="block text-sm font-medium text-gray-200">Бренд</label>
+            <div className="w-full md:w-1/3 tooltip">
+              <label className="block text-sm font-medium text-gray-200" data-i18n="brand_label">Бренд</label>
+              <span className="tooltip-text" data-i18n="brand_tooltip">Выберите производителя фурнитуры.</span>
               <select
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
                 className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
               >
-                <option value="">Выберите бренд</option>
+                <option value="" data-i18n="brand_placeholder">Выберите бренд</option>
                 {[...new Set(fittingsDatabase.map(f => f.brand))].map(b => (
                   <option key={b} value={b}>{b}</option>
                 ))}
@@ -266,15 +430,41 @@
             </div>
           </div>
 
+          <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8">
+            <div className="w-full md:w-1/3">
+              <label className="block text-sm font-medium text-gray-200" data-i18n="price_range_from">Цена от (руб.)</label>
+              <input
+                type="number"
+                name="min"
+                value={priceRange.min}
+                onChange={handlePriceRangeChange}
+                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
+                placeholder="300"
+              />
+            </div>
+            <div className="w-full md:w-1/3">
+              <label className="block text-sm font-medium text-gray-200" data-i18n="price_range_to">Цена до (руб.)</label>
+              <input
+                type="number"
+                name="max"
+                value={priceRange.max}
+                onChange={handlePriceRangeChange}
+                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
+                placeholder="1000"
+              />
+            </div>
+          </div>
+
           {type && (
-            <div className="mb-8 text-center">
-              <label className="block text-sm font-medium text-gray-200">Дополнительные опции для {type}</label>
+            <div className="mb-8 text-center tooltip">
+              <label className="block text-sm font-medium text-gray-200" data-i18n="specific_option_label">Дополнительные опции для {type}</label>
+              <span className="tooltip-text" data-i18n="specific_option_tooltip">Уточните дополнительные характеристики, например, наличие доводчика.</span>
               <select
                 value={specificOption}
                 onChange={(e) => setSpecificOption(e.target.value)}
                 className="mt-2 block w-full md:w-1/3 mx-auto rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
               >
-                <option value="">Выберите опцию</option>
+                <option value="" data-i18n="specific_option_placeholder">Выберите опцию</option>
                 {specificOptions[type].map(option => (
                   <option key={option} value={option}>{option}</option>
                 ))}
@@ -288,6 +478,7 @@
             <button
               onClick={findBestOptions}
               className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto"
+              data-i18n="find_options"
             >
               Найти варианты
             </button>
@@ -295,7 +486,7 @@
 
           {results.length > 0 && (
             <div>
-              <h2 className="text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text">Подходящие варианты:</h2>
+              <h2 className="text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text" data-i18n="results_title">Подходящие варианты:</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {results.map(fitting => (
                   <div
@@ -308,19 +499,28 @@
                       className="w-full h-40 object-cover rounded-lg mb-4"
                     />
                     <h3 className="text-xl font-semibold text-white">{fitting.name}</h3>
-                    <p className="text-gray-300">Тип: {fitting.type} ({fitting.subtype})</p>
-                    <p className="text-gray-300">Механизм: {fitting.mechanism}</p>
-                    <p className="text-gray-300">Опция: {fitting.specificOption}</p>
-                    <p className="text-gray-300">Бренд: {fitting.brand}</p>
-                    <p className="text-purple-500 font-bold mt-2">Цена: {fitting.price} руб.</p>
-                    <p className="text-gray-400 mt-2">{fitting.description}</p>
-                    <button
-                      onClick={() => saveResult(fitting)}
-                      className="mt-4 w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-md hover:from-blue-700 hover:to-blue-800 transition duration-200"
-                    >
-                      Сохранить
-                    </button>
-                    <p className="text-xs text-gray-500 mt-2">*Данная цена может варьироваться в зависимости от выбора продавца или поставщика</p>
+                    <p className="text-gray-300" data-i18n="type">{i18next.t('type')}: {fitting.type} ({fitting.subtype})</p>
+                    <p className="text-gray-300" data-i18n="option">{i18next.t('option')}: {fitting.specificOption}</p>
+                    <p className="text-gray-300" data-i18n="brand">{i18next.t('brand')}: {fitting.brand}</p>
+                    <p className="text-purple-500 font-bold mt-2" data-i18n="price">{i18next.t('price')}: {fitting.price} руб.</p>
+                    <p className="text-gray-400 mt-2" data-i18n="description">{i18next.t('description')}: {fitting.description}</p>
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        onClick={() => saveResult(fitting)}
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-md hover:from-blue-700 hover:to-blue-800 transition duration-200"
+                        data-i18n="save"
+                      >
+                        Сохранить
+                      </button>
+                      <button
+                        onClick={() => toggleCompare(fitting)}
+                        className={`w-full px-4 py-2 rounded-md text-white transition duration-200 ${compareItems.some(item => item.id === fitting.id) ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+                        data-i18n="compare"
+                      >
+                        Сравнить
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2" data-i18n="price_disclaimer">*Данная цена может варьироваться в зависимости от выбора продавца или поставщика</p>
                   </div>
                 ))}
               </div>
@@ -328,12 +528,14 @@
                 <button
                   onClick={() => saveToPDF(false)}
                   className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto"
+                  data-i18n="export_selected_pdf"
                 >
                   Экспорт выбранных в PDF
                 </button>
                 <button
                   onClick={() => saveToPDF(true)}
                   className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto mt-4 md:mt-0"
+                  data-i18n="export_all_pdf"
                 >
                   Экспорт всего списка в PDF
                 </button>
@@ -343,7 +545,7 @@
 
           {savedResults.length > 0 && (
             <div className="mt-10">
-              <h2 className="text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text">Сохранённые варианты:</h2>
+              <h2 className="text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text" data-i18n="saved_results_title">Сохранённые варианты:</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {savedResults.map(fitting => (
                   <div
@@ -351,14 +553,89 @@
                     className="bg-gray-700 rounded-xl shadow-md p-4 hover:bg-gray-600 transition duration-300"
                   >
                     <h3 className="text-xl font-semibold text-white">{fitting.name}</h3>
-                    <p className="text-gray-300">Цена: {fitting.price} руб.</p>
-                    <p className="text-gray-300">Бренд: {fitting.brand}</p>
+                    <p className="text-gray-300" data-i18n="price">{i18next.t('price')}: {fitting.price} руб.</p>
+                    <p className="text-gray-300" data-i18n="brand">{i18next.t('brand')}: {fitting.brand}</p>
+                    <button
+                      onClick={() => toggleCompare(fitting)}
+                      className={`mt-2 w-full px-4 py-2 rounded-md text-white transition duration-200 ${compareItems.some(item => item.id === fitting.id) ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+                      data-i18n="compare"
+                    >
+                      Сравнить
+                    </button>
                   </div>
                 ))}
+              </div>
+              {compareItems.length > 0 && (
+                <div className="flex justify-center mt-4">
+                  <button
+                    onClick={() => setShowCompare(true)}
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105"
+                    data-i18n="compare_title"
+                  >
+                    Сравнение товаров
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {showCompare && compareItems.length > 0 && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-20">
+              <div className="bg-gray-900 rounded-xl p-6 max-w-4xl w-full overflow-x-auto">
+                <h2 className="text-2xl font-bold text-white mb-4" data-i18n="compare_title">Сравнение товаров</h2>
+                <table className="w-full text-left text-gray-300">
+                  <thead>
+                    <tr className="border-b border-gray-700">
+                      <th className="p-2" data-i18n="name">Название</th>
+                      <th className="p-2" data-i18n="type">Тип</th>
+                      <th className="p-2" data-i18n="subtype">Подтип</th>
+                      <th className="p-2" data-i18n="option">Опция</th>
+                      <th className="p-2" data-i18n="brand">Бренд</th>
+                      <th className="p-2" data-i18n="price">Цена (руб.)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {compareItems.map(item => (
+                      <tr key={item.id} className="border-b border-gray-700">
+                        <td className="p-2">{item.name}</td>
+                        <td className="p-2">{item.type}</td>
+                        <td className="p-2">{item.subtype}</td>
+                        <td className="p-2">{item.specificOption}</td>
+                        <td className="p-2">{item.brand}</td>
+                        <td className="p-2">{item.price}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <button
+                  onClick={() => setShowCompare(false)}
+                  className="mt-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105"
+                  data-i18n="close"
+                >
+                  Закрыть
+                </button>
               </div>
             </div>
           )}
         </div>
+      );
+    };
+
+    const App = () => {
+      const [currentPage, setCurrentPage] = useState('welcome');
+
+      useEffect(() => {
+        document.querySelectorAll('[data-i18n]').forEach(elem => {
+          elem.textContent = i18next.t(elem.getAttribute('data-i18n'));
+        });
+      }, [currentPage]);
+
+      return (
+        <>
+          <Navbar setCurrentPage={setCurrentPage} />
+          {currentPage === 'welcome' && <WelcomePage onNavigate={() => setCurrentPage('configurator')} />}
+          {currentPage === 'configurator' && <ConfiguratorPage />}
+        </>
       );
     };
 
