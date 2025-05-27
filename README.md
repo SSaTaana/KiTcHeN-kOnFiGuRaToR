@@ -34,6 +34,7 @@
       max-width: 40rem;
       text-align: center;
       animation: fadeIn 1s ease-in-out;
+      margin: 6rem auto; /* Унифицируем отступы для выравнивания */
     }
     .configurator-container {
       animation: fadeIn 1s ease-in-out;
@@ -62,14 +63,17 @@
       padding: 1rem 0;
       z-index: 10;
     }
+    .price-inputs-container {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
     .tab-buttons {
-      position: absolute;
-      top: 100%; /* Сдвигаем вниз, чтобы выровнять с кнопкой "Найти варианты" */
-      right: 1rem;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      margin-top: 1rem; /* Добавляем отступ для выравнивания */
       z-index: 10;
     }
     .tab-button {
@@ -123,6 +127,9 @@
         padding: 1rem;
         margin: 4rem 0.5rem;
       }
+      .welcome-container {
+        margin: 4rem 0.5rem; /* Унифицируем отступы для мобильных */
+      }
       h1 {
         font-size: 1.75rem;
       }
@@ -142,37 +149,38 @@
         font-size: 0.9rem;
         padding: 0.5rem;
       }
+      .price-inputs-container {
+        flex-direction: column; /* Вертикальное расположение для мобильных */
+        align-items: center;
+      }
       .tab-buttons {
-        top: 100%;
-        right: 0.5rem;
+        flex-direction: row; /* Горизонтальное расположение кнопок */
+        justify-content: center;
+        width: 100%;
         margin-top: 1rem;
-        flex-direction: row; /* Переключаем на горизонтальное расположение на мобильных */
-        position: relative; /* Сбрасываем фиксированное позиционирование */
-        justify-content: center; /* Центрируем кнопки */
-        width: 100%; /* Растягиваем на всю ширину */
       }
       .tab-button {
-        flex: 1; /* Равномерное распределение ширины */
+        flex: 1;
         text-align: center;
         padding: 0.5rem;
-        font-size: 0.9rem; /* Уменьшаем шрифт для компактности */
+        font-size: 0.9rem;
       }
       .flex.flex-col.md\:flex-row {
-        flex-direction: column; /* Сохраняем вертикальное расположение на мобильных */
+        flex-direction: column;
       }
       .w-full.md\:w-1/3 {
-        width: 100%; /* Полная ширина для каждого элемента */
-        margin-bottom: 1rem; /* Отступ между элементами */
+        width: 100%;
+        margin-bottom: 1rem;
       }
       .tab-content {
-        margin-top: 4rem; /* Уменьшаем отступ для мобильных */
+        margin-top: 4rem;
       }
       select, input {
-        font-size: 1rem; /* Увеличиваем читаемость */
+        font-size: 1rem;
         padding: 0.75rem;
       }
       button {
-        font-size: 1rem; /* Увеличиваем читаемость кнопок */
+        font-size: 1rem;
         padding: 0.75rem;
       }
     }
@@ -185,6 +193,11 @@
       max-width: 50rem;
       margin: 6rem auto;
       animation: fadeIn 1s ease-in-out;
+    }
+    @media (max-width: 640px) {
+      .about-container {
+        margin: 4rem 0.5rem; /* Унифицируем отступы для мобильных */
+      }
     }
     .about-container h2 {
       font-size: 2rem;
@@ -376,12 +389,17 @@
       };
 
       const findBestOptions = () => {
+        if (!fittingsDatabase || fittingsDatabase.length === 0) {
+          setError("База данных недоступна.");
+          return;
+        }
+
         const filteredFittings = fittingsDatabase.filter(fitting => {
           const typeMatch = type ? fitting.type === type : true;
           const specificOptionMatch = specificOption ? fitting.specificOption === specificOption : true;
           const brandMatch = brand ? fitting.brand === brand : true;
-          const priceMinMatch = priceRange.min ? fitting.price >= Number(priceRange.min) : true;
-          const priceMaxMatch = priceRange.max ? fitting.price <= Number(priceRange.max) : true;
+          const priceMinMatch = priceRange.min !== '' ? fitting.price >= Number(priceRange.min) : true;
+          const priceMaxMatch = priceRange.max !== '' ? fitting.price <= Number(priceRange.max) : true;
 
           return typeMatch && specificOptionMatch && brandMatch && priceMinMatch && priceMaxMatch;
         });
@@ -389,7 +407,7 @@
         if (filteredFittings.length === 0) {
           setError(i18next.t('no_match'));
           const fallback = type ? fittingsDatabase.find(f => f.type === type) : fittingsDatabase[0];
-          setResults([fallback]);
+          setResults(fallback ? [fallback] : []);
         } else {
           setError('');
           setResults(filteredFittings);
@@ -467,28 +485,42 @@
               )
             )
           ),
-          React.createElement('div', { className: 'flex flex-col md:flex-row justify-center items-center gap-6 mb-8' },
-            React.createElement('div', { className: 'w-full md:w-1/3' },
-              React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'price_range_from' }, 'Цена от (руб.)'),
-              React.createElement('input', {
-                type: 'number',
-                name: 'min',
-                value: priceRange.min,
-                onChange: handlePriceRangeChange,
-                className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200',
-                min: '0'
-              })
-            ),
-            React.createElement('div', { className: 'w-full md:w-1/3' },
-              React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'price_range_to' }, 'Цена до (руб.)'),
-              React.createElement('input', {
-                type: 'number',
-                name: 'max',
-                value: priceRange.max,
-                onChange: handlePriceRangeChange,
-                className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200',
-                min: '0'
-              })
+          React.createElement('div', { className: 'price-inputs-container justify-center mb-8' },
+            React.createElement('div', { className: 'flex flex-col md:flex-row gap-6' },
+              React.createElement('div', { className: 'w-full md:w-1/3' },
+                React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'price_range_from' }, 'Цена от (руб.)'),
+                React.createElement('input', {
+                  type: 'number',
+                  name: 'min',
+                  value: priceRange.min,
+                  onChange: handlePriceRangeChange,
+                  className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200',
+                  min: '0'
+                })
+              ),
+              React.createElement('div', { className: 'w-full md:w-1/3' },
+                React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'price_range_to' }, 'Цена до (руб.)'),
+                React.createElement('input', {
+                  type: 'number',
+                  name: 'max',
+                  value: priceRange.max,
+                  onChange: handlePriceRangeChange,
+                  className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200',
+                  min: '0'
+                })
+              ),
+              React.createElement('div', { className: 'tab-buttons' },
+                React.createElement('button', {
+                  className: `tab-button ${activeTab === 'results' ? 'active' : ''}`,
+                  onClick: () => setActiveTab('results'),
+                  'data-i18n': 'tab_results'
+                }, 'Результаты'),
+                React.createElement('button', {
+                  className: `tab-button ${activeTab === 'saved' ? 'active' : ''}`,
+                  onClick: () => setActiveTab('saved'),
+                  'data-i18n': 'tab_saved'
+                }, 'Сохранённые')
+              )
             )
           ),
           type && React.createElement('div', { className: 'mb-8 text-center tooltip' },
@@ -578,18 +610,6 @@
                 )
               )
             )
-          ),
-          React.createElement('div', { className: 'tab-buttons' },
-            React.createElement('button', {
-              className: `tab-button ${activeTab === 'results' ? 'active' : ''}`,
-              onClick: () => setActiveTab('results'),
-              'data-i18n': 'tab_results'
-            }, 'Результаты'),
-            React.createElement('button', {
-              className: `tab-button ${activeTab === 'saved' ? 'active' : ''}`,
-              onClick: () => setActiveTab('saved'),
-              'data-i18n': 'tab_saved'
-            }, 'Сохранённые')
           )
         )
       );
