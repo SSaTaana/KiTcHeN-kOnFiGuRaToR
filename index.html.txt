@@ -63,12 +63,13 @@
       z-index: 10;
     }
     .tab-buttons {
-      position: fixed;
-      top: 4rem;
+      position: absolute;
+      top: 100%; /* Сдвигаем вниз, чтобы выровнять с кнопкой "Найти варианты" */
       right: 1rem;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      margin-top: 1rem; /* Добавляем отступ для выравнивания */
       z-index: 10;
     }
     .tab-button {
@@ -142,8 +143,37 @@
         padding: 0.5rem;
       }
       .tab-buttons {
-        top: 3rem;
+        top: 100%;
         right: 0.5rem;
+        margin-top: 1rem;
+        flex-direction: row; /* Переключаем на горизонтальное расположение на мобильных */
+        position: relative; /* Сбрасываем фиксированное позиционирование */
+        justify-content: center; /* Центрируем кнопки */
+        width: 100%; /* Растягиваем на всю ширину */
+      }
+      .tab-button {
+        flex: 1; /* Равномерное распределение ширины */
+        text-align: center;
+        padding: 0.5rem;
+        font-size: 0.9rem; /* Уменьшаем шрифт для компактности */
+      }
+      .flex.flex-col.md\:flex-row {
+        flex-direction: column; /* Сохраняем вертикальное расположение на мобильных */
+      }
+      .w-full.md\:w-1/3 {
+        width: 100%; /* Полная ширина для каждого элемента */
+        margin-bottom: 1rem; /* Отступ между элементами */
+      }
+      .tab-content {
+        margin-top: 4rem; /* Уменьшаем отступ для мобильных */
+      }
+      select, input {
+        font-size: 1rem; /* Увеличиваем читаемость */
+        padding: 0.75rem;
+      }
+      button {
+        font-size: 1rem; /* Увеличиваем читаемость кнопок */
+        padding: 0.75rem;
       }
     }
     .about-container {
