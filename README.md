@@ -224,30 +224,49 @@
       };
 
       return (
-        <nav className="navbar flex justify-center gap-6">
-          <a href="#" onClick={() => setCurrentPage('welcome')} className="text-white hover:text-indigo-400 transition duration-200" data-i18n="nav_home">Главная</a>
-          <a href="#" onClick={() => setCurrentPage('configurator')} className="text-white hover:text-indigo-400 transition duration-200" data-i18n="nav_configurator">Конфигуратор</a>
-          <div className="absolute right-4 flex gap-2">
-            <button onClick={() => changeLanguage('ru')} className="text-white hover:text-indigo-400 transition duration-200" data-i18n="lang_ru">Русский</button>
-            <button onClick={() => changeLanguage('en')} className="text-white hover:text-indigo-400 transition duration-200" data-i18n="lang_en">English</button>
-          </div>
-        </nav>
+        React.createElement('nav', { className: 'navbar flex justify-center gap-6' },
+          React.createElement('a', {
+            href: '#',
+            onClick: () => setCurrentPage('welcome'),
+            className: 'text-white hover:text-indigo-400 transition duration-200',
+            'data-i18n': 'nav_home'
+          }, 'Главная'),
+          React.createElement('a', {
+            href: '#',
+            onClick: () => setCurrentPage('configurator'),
+            className: 'text-white hover:text-indigo-400 transition duration-200',
+            'data-i18n': 'nav_configurator'
+          }, 'Конфигуратор'),
+          React.createElement('div', { className: 'absolute right-4 flex gap-2' },
+            React.createElement('button', {
+              onClick: () => changeLanguage('ru'),
+              className: 'text-white hover:text-indigo-400 transition duration-200',
+              'data-i18n': 'lang_ru'
+            }, 'Русский'),
+            React.createElement('button', {
+              onClick: () => changeLanguage('en'),
+              className: 'text-white hover:text-indigo-400 transition duration-200',
+              'data-i18n': 'lang_en'
+            }, 'English')
+          )
+        )
       );
     };
 
     const WelcomePage = ({ onNavigate }) => {
       return (
-        <div className="welcome-container">
-          <h1 className="text-4xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent" data-i18n="welcome_title">Добро пожаловать!</h1>
-          <p className="text-gray-300 mb-8" data-i18n="welcome_text">На нашем сайте вы можете подобрать идеальную мебельную фурнитуру с помощью удобного конфигуратора.</p>
-          <button
-            onClick={onNavigate}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105"
-            data-i18n="go_to_configurator"
-          >
-            Перейти в конфигуратор
-          </button>
-        </div>
+        React.createElement('div', { className: 'welcome-container' },
+          React.createElement('h1', {
+            className: 'text-4xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent',
+            'data-i18n': 'welcome_title'
+          }, 'Добро пожаловать!'),
+          React.createElement('p', { className: 'text-gray-300 mb-8', 'data-i18n': 'welcome_text' }, 'На нашем сайте вы можете подобрать идеальную мебельную фурнитуру с помощью удобного конфигуратора.'),
+          React.createElement('button', {
+            onClick: onNavigate,
+            className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105',
+            'data-i18n': 'go_to_configurator'
+          }, 'Перейти в конфигуратор')
+        )
       );
     };
 
@@ -396,228 +415,203 @@
       };
 
       return (
-        <div className="container-overlay">
-          <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent" data-i18n="configurator_title">Конфигуратор мебельной фурнитуры</h1>
-
-          <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8">
-            <div className="w-full md:w-1/3 tooltip">
-              <label className="block text-sm font-medium text-gray-200" data-i18n="type_label">Тип фурнитуры</label>
-              <span className="tooltip-text" data-i18n="type_tooltip">Выберите тип фурнитуры, например, петли, ручки или направляющие.</span>
-              <select
-                value={type}
-                onChange={(e) => { setType(e.target.value); setSpecificOption(''); }}
-                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
-              >
-                <option value="" data-i18n="type_placeholder">Выберите тип</option>
-                {[...new Set(fittingsDatabase.map(f => f.type))].map(t => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-            <div className="w-full md:w-1/3 tooltip">
-              <label className="block text-sm font-medium text-gray-200" data-i18n="brand_label">Бренд</label>
-              <span className="tooltip-text" data-i18n="brand_tooltip">Выберите производителя фурнитуры.</span>
-              <select
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
-              >
-                <option value="" data-i18n="brand_placeholder">Выберите бренд</option>
-                {[...new Set(fittingsDatabase.map(f => f.brand))].map(b => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8">
-            <div className="w-full md:w-1/3">
-              <label className="block text-sm font-medium text-gray-200" data-i18n="price_range_from">Цена от (руб.)</label>
-              <input
-                type="number"
-                name="min"
-                value={priceRange.min}
-                onChange={handlePriceRangeChange}
-                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
-                placeholder="300"
-              />
-            </div>
-            <div className="w-full md:w-1/3">
-              <label className="block text-sm font-medium text-gray-200" data-i18n="price_range_to">Цена до (руб.)</label>
-              <input
-                type="number"
-                name="max"
-                value={priceRange.max}
-                onChange={handlePriceRangeChange}
-                className="mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
-                placeholder="1000"
-              />
-            </div>
-          </div>
-
-          {type && (
-            <div className="mb-8 text-center tooltip">
-              <label className="block text-sm font-medium text-gray-200" data-i18n="specific_option_label">Дополнительные опции для {type}</label>
-              <span className="tooltip-text" data-i18n="specific_option_tooltip">Уточните дополнительные характеристики, например, наличие доводчика.</span>
-              <select
-                value={specificOption}
-                onChange={(e) => setSpecificOption(e.target.value)}
-                className="mt-2 block w-full md:w-1/3 mx-auto rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200"
-              >
-                <option value="" data-i18n="specific_option_placeholder">Выберите опцию</option>
-                {specificOptions[type].map(option => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {error && <p className="text-red-400 text-center mb-4">{error}</p>}
-
-          <div className="flex justify-center mb-8">
-            <button
-              onClick={findBestOptions}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto"
-              data-i18n="find_options"
-            >
-              Найти варианты
-            </button>
-          </div>
-
-          {results.length > 0 && (
-            <div>
-              <h2 className="text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text" data-i18n="results_title">Подходящие варианты:</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {results.map(fitting => (
-                  <div
-                    key={fitting.id}
-                    className="bg-gray-900 rounded-xl shadow-xl p-4 hover:bg-gray-800 hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-                  >
-                    <img
-                      src={fitting.image}
-                      alt={fitting.name}
-                      className="w-full h-40 object-cover rounded-lg mb-4"
-                    />
-                    <h3 className="text-xl font-semibold text-white">{fitting.name}</h3>
-                    <p className="text-gray-300" data-i18n="type">{i18next.t('type')}: {fitting.type} ({fitting.subtype})</p>
-                    <p className="text-gray-300" data-i18n="option">{i18next.t('option')}: {fitting.specificOption}</p>
-                    <p className="text-gray-300" data-i18n="brand">{i18next.t('brand')}: {fitting.brand}</p>
-                    <p className="text-purple-500 font-bold mt-2" data-i18n="price">{i18next.t('price')}: {fitting.price} руб.</p>
-                    <p className="text-gray-400 mt-2" data-i18n="description">{i18next.t('description')}: {fitting.description}</p>
-                    <div className="flex gap-2 mt-4">
-                      <button
-                        onClick={() => saveResult(fitting)}
-                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-md hover:from-blue-700 hover:to-blue-800 transition duration-200"
-                        data-i18n="save"
-                      >
-                        Сохранить
-                      </button>
-                      <button
-                        onClick={() => toggleCompare(fitting)}
-                        className={`w-full px-4 py-2 rounded-md text-white transition duration-200 ${compareItems.some(item => item.id === fitting.id) ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
-                        data-i18n="compare"
-                      >
-                        Сравнить
-                      </button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2" data-i18n="price_disclaimer">*Данная цена может варьироваться в зависимости от выбора продавца или поставщика</p>
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-col md:flex-row justify-center mt-8 gap-4">
-                <button
-                  onClick={() => saveToPDF(false)}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto"
-                  data-i18n="export_selected_pdf"
-                >
-                  Экспорт выбранных в PDF
-                </button>
-                <button
-                  onClick={() => saveToPDF(true)}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto mt-4 md:mt-0"
-                  data-i18n="export_all_pdf"
-                >
-                  Экспорт всего списка в PDF
-                </button>
-              </div>
-            </div>
-          )}
-
-          {savedResults.length > 0 && (
-            <div className="mt-10">
-              <h2 className="text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text" data-i18n="saved_results_title">Сохранённые варианты:</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {savedResults.map(fitting => (
-                  <div
-                    key={fitting.id}
-                    className="bg-gray-700 rounded-xl shadow-md p-4 hover:bg-gray-600 transition duration-300"
-                  >
-                    <h3 className="text-xl font-semibold text-white">{fitting.name}</h3>
-                    <p className="text-gray-300" data-i18n="price">{i18next.t('price')}: {fitting.price} руб.</p>
-                    <p className="text-gray-300" data-i18n="brand">{i18next.t('brand')}: {fitting.brand}</p>
-                    <button
-                      onClick={() => toggleCompare(fitting)}
-                      className={`mt-2 w-full px-4 py-2 rounded-md text-white transition duration-200 ${compareItems.some(item => item.id === fitting.id) ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
-                      data-i18n="compare"
-                    >
-                      Сравнить
-                    </button>
-                  </div>
-                ))}
-              </div>
-              {compareItems.length > 0 && (
-                <div className="flex justify-center mt-4">
-                  <button
-                    onClick={() => setShowCompare(true)}
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105"
-                    data-i18n="compare_title"
-                  >
-                    Сравнение товаров
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {showCompare && compareItems.length > 0 && (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-20">
-              <div className="bg-gray-900 rounded-xl p-6 max-w-4xl w-full overflow-x-auto">
-                <h2 className="text-2xl font-bold text-white mb-4" data-i18n="compare_title">Сравнение товаров</h2>
-                <table className="w-full text-left text-gray-300">
-                  <thead>
-                    <tr className="border-b border-gray-700">
-                      <th className="p-2" data-i18n="name">Название</th>
-                      <th className="p-2" data-i18n="type">Тип</th>
-                      <th className="p-2" data-i18n="subtype">Подтип</th>
-                      <th className="p-2" data-i18n="option">Опция</th>
-                      <th className="p-2" data-i18n="brand">Бренд</th>
-                      <th className="p-2" data-i18n="price">Цена (руб.)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {compareItems.map(item => (
-                      <tr key={item.id} className="border-b border-gray-700">
-                        <td className="p-2">{item.name}</td>
-                        <td className="p-2">{item.type}</td>
-                        <td className="p-2">{item.subtype}</td>
-                        <td className="p-2">{item.specificOption}</td>
-                        <td className="p-2">{item.brand}</td>
-                        <td className="p-2">{item.price}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <button
-                  onClick={() => setShowCompare(false)}
-                  className="mt-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105"
-                  data-i18n="close"
-                >
-                  Закрыть
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        React.createElement('div', { className: 'container-overlay' },
+          React.createElement('h1', {
+            className: 'text-4xl font-bold text-center mb-8 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent',
+            'data-i18n': 'configurator_title'
+          }, 'Конфигуратор мебельной фурнитуры'),
+          React.createElement('div', { className: 'flex flex-col md:flex-row justify-center items-center gap-6 mb-8' },
+            React.createElement('div', { className: 'w-full md:w-1/3 tooltip' },
+              React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'type_label' }, 'Тип фурнитуры'),
+              React.createElement('span', { className: 'tooltip-text', 'data-i18n': 'type_tooltip' }, 'Выберите тип фурнитуры, например, петли, ручки или направляющие.'),
+              React.createElement('select', {
+                value: type,
+                onChange: (e) => { setType(e.target.value); setSpecificOption(''); },
+                className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200'
+              },
+                React.createElement('option', { value: '', 'data-i18n': 'type_placeholder' }, 'Выберите тип'),
+                [...new Set(fittingsDatabase.map(f => f.type))].map(t =>
+                  React.createElement('option', { key: t, value: t }, t)
+                )
+              )
+            ),
+            React.createElement('div', { className: 'w-full md:w-1/3 tooltip' },
+              React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'brand_label' }, 'Бренд'),
+              React.createElement('span', { className: 'tooltip-text', 'data-i18n': 'brand_tooltip' }, 'Выберите производителя фурнитуры.'),
+              React.createElement('select', {
+                value: brand,
+                onChange: (e) => setBrand(e.target.value),
+                className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200'
+              },
+                React.createElement('option', { value: '', 'data-i18n': 'brand_placeholder' }, 'Выберите бренд'),
+                [...new Set(fittingsDatabase.map(f => f.brand))].map(b =>
+                  React.createElement('option', { key: b, value: b }, b)
+                )
+              )
+            )
+          ),
+          React.createElement('div', { className: 'flex flex-col md:flex-row justify-center items-center gap-6 mb-8' },
+            React.createElement('div', { className: 'w-full md:w-1/3' },
+              React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'price_range_from' }, 'Цена от (руб.)'),
+              React.createElement('input', {
+                type: 'number',
+                name: 'min',
+                value: priceRange.min,
+                onChange: handlePriceRangeChange,
+                className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200',
+                placeholder: '300'
+              })
+            ),
+            React.createElement('div', { className: 'w-full md:w-1/3' },
+              React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'price_range_to' }, 'Цена до (руб.)'),
+              React.createElement('input', {
+                type: 'number',
+                name: 'max',
+                value: priceRange.max,
+                onChange: handlePriceRangeChange,
+                className: 'mt-2 block w-full rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200',
+                placeholder: '1000'
+              })
+            )
+          ),
+          type && React.createElement('div', { className: 'mb-8 text-center tooltip' },
+            React.createElement('label', { className: 'block text-sm font-medium text-gray-200', 'data-i18n': 'specific_option_label' }, `Дополнительные опции для ${type}`),
+            React.createElement('span', { className: 'tooltip-text', 'data-i18n': 'specific_option_tooltip' }, 'Уточните дополнительные характеристики, например, наличие доводчика.'),
+            React.createElement('select', {
+              value: specificOption,
+              onChange: (e) => setSpecificOption(e.target.value),
+              className: 'mt-2 block w-full md:w-1/3 mx-auto rounded-md border-gray-700 bg-gray-900 text-white shadow-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-3 transition duration-200'
+            },
+              React.createElement('option', { value: '', 'data-i18n': 'specific_option_placeholder' }, 'Выберите опцию'),
+              specificOptions[type].map(option =>
+                React.createElement('option', { key: option, value: option }, option)
+              )
+            )
+          ),
+          error && React.createElement('p', { className: 'text-red-400 text-center mb-4' }, error),
+          React.createElement('div', { className: 'flex justify-center mb-8' },
+            React.createElement('button', {
+              onClick: findBestOptions,
+              className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto',
+              'data-i18n': 'find_options'
+            }, 'Найти варианты')
+          ),
+          results.length > 0 && React.createElement('div', null,
+            React.createElement('h2', {
+              className: 'text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text',
+              'data-i18n': 'results_title'
+            }, 'Подходящие варианты:'),
+            React.createElement('div', { className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' },
+              results.map(fitting =>
+                React.createElement('div', {
+                  key: fitting.id,
+                  className: 'bg-gray-900 rounded-xl shadow-xl p-4 hover:bg-gray-800 hover:shadow-2xl transition-all duration-300 transform hover:scale-105'
+                },
+                  React.createElement('img', {
+                    src: fitting.image,
+                    alt: fitting.name,
+                    className: 'w-full h-40 object-cover rounded-lg mb-4'
+                  }),
+                  React.createElement('h3', { className: 'text-xl font-semibold text-white' }, fitting.name),
+                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'type' }, `${i18next.t('type')}: ${fitting.type} (${fitting.subtype})`),
+                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'option' }, `${i18next.t('option')}: ${fitting.specificOption}`),
+                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'brand' }, `${i18next.t('brand')}: ${fitting.brand}`),
+                  React.createElement('p', { className: 'text-purple-500 font-bold mt-2', 'data-i18n': 'price' }, `${i18next.t('price')}: ${fitting.price} руб.`),
+                  React.createElement('p', { className: 'text-gray-400 mt-2', 'data-i18n': 'description' }, `${i18next.t('description')}: ${fitting.description}`),
+                  React.createElement('div', { className: 'flex gap-2 mt-4' },
+                    React.createElement('button', {
+                      onClick: () => saveResult(fitting),
+                      className: 'w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-md hover:from-blue-700 hover:to-blue-800 transition duration-200',
+                      'data-i18n': 'save'
+                    }, 'Сохранить'),
+                    React.createElement('button', {
+                      onClick: () => toggleCompare(fitting),
+                      className: `w-full px-4 py-2 rounded-md text-white transition duration-200 ${compareItems.some(item => item.id === fitting.id) ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`,
+                      'data-i18n': 'compare'
+                    }, 'Сравнить')
+                  ),
+                  React.createElement('p', { className: 'text-xs text-gray-500 mt-2', 'data-i18n': 'price_disclaimer' }, '*Данная цена может варьироваться в зависимости от выбора продавца или поставщика')
+                )
+              )
+            ),
+            React.createElement('div', { className: 'flex flex-col md:flex-row justify-center mt-8 gap-4' },
+              React.createElement('button', {
+                onClick: () => saveToPDF(false),
+                className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto',
+                'data-i18n': 'export_selected_pdf'
+              }, 'Экспорт выбранных в PDF'),
+              React.createElement('button', {
+                onClick: () => saveToPDF(true),
+                className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105 w-full md:w-auto mt-4 md:mt-0',
+                'data-i18n': 'export_all_pdf'
+              }, 'Экспорт всего списка в PDF')
+            )
+          ),
+          savedResults.length > 0 && React.createElement('div', { className: 'mt-10' },
+            React.createElement('h2', {
+              className: 'text-3xl font-semibold text-white mb-6 text-center bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text',
+              'data-i18n': 'saved_results_title'
+            }, 'Сохранённые варианты:'),
+            React.createElement('div', { className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' },
+              savedResults.map(fitting =>
+                React.createElement('div', {
+                  key: fitting.id,
+                  className: 'bg-gray-700 rounded-xl shadow-md p-4 hover:bg-gray-600 transition duration-300'
+                },
+                  React.createElement('h3', { className: 'text-xl font-semibold text-white' }, fitting.name),
+                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'price' }, `${i18next.t('price')}: ${fitting.price} руб.`),
+                  React.createElement('p', { className: 'text-gray-300', 'data-i18n': 'brand' }, `${i18next.t('brand')}: ${fitting.brand}`),
+                  React.createElement('button', {
+                    onClick: () => toggleCompare(fitting),
+                    className: `mt-2 w-full px-4 py-2 rounded-md text-white transition duration-200 ${compareItems.some(item => item.id === fitting.id) ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`,
+                    'data-i18n': 'compare'
+                  }, 'Сравнить')
+                )
+              )
+            ),
+            compareItems.length > 0 && React.createElement('div', { className: 'flex justify-center mt-4' },
+              React.createElement('button', {
+                onClick: () => setShowCompare(true),
+                className: 'bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105',
+                'data-i18n': 'compare_title'
+              }, 'Сравнение товаров')
+            )
+          ),
+          showCompare && compareItems.length > 0 && React.createElement('div', { className: 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-20' },
+            React.createElement('div', { className: 'bg-gray-900 rounded-xl p-6 max-w-4xl w-full overflow-x-auto' },
+              React.createElement('h2', { className: 'text-2xl font-bold text-white mb-4', 'data-i18n': 'compare_title' }, 'Сравнение товаров'),
+              React.createElement('table', { className: 'w-full text-left text-gray-300' },
+                React.createElement('thead', null,
+                  React.createElement('tr', { className: 'border-b border-gray-700' },
+                    React.createElement('th', { className: 'p-2', 'data-i18n': 'name' }, 'Название'),
+                    React.createElement('th', { className: 'p-2', 'data-i18n': 'type' }, 'Тип'),
+                    React.createElement('th', { className: 'p-2', 'data-i18n': 'subtype' }, 'Подтип'),
+                    React.createElement('th', { className: 'p-2', 'data-i18n': 'option' }, 'Опция'),
+                    React.createElement('th', { className: 'p-2', 'data-i18n': 'brand' }, 'Бренд'),
+                    React.createElement('th', { className: 'p-2', 'data-i18n': 'price' }, 'Цена (руб.)')
+                  )
+                ),
+                React.createElement('tbody', null,
+                  compareItems.map(item =>
+                    React.createElement('tr', { key: item.id, className: 'border-b border-gray-700' },
+                      React.createElement('td', { className: 'p-2' }, item.name),
+                      React.createElement('td', { className: 'p-2' }, item.type),
+                      React.createElement('td', { className: 'p-2' }, item.subtype),
+                      React.createElement('td', { className: 'p-2' }, item.specificOption),
+                      React.createElement('td', { className: 'p-2' }, item.brand),
+                      React.createElement('td', { className: 'p-2' }, item.price)
+                    )
+                  )
+                )
+              ),
+              React.createElement('button', {
+                onClick: () => setShowCompare(false),
+                className: 'mt-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 transform hover:scale-105',
+                'data-i18n': 'close'
+              }, 'Закрыть')
+            )
+          )
+        )
       );
     };
 
@@ -631,15 +625,15 @@
       }, [currentPage]);
 
       return (
-        <>
-          <Navbar setCurrentPage={setCurrentPage} />
-          {currentPage === 'welcome' && <WelcomePage onNavigate={() => setCurrentPage('configurator')} />}
-          {currentPage === 'configurator' && <ConfiguratorPage />}
-        </>
+        React.createElement(React.Fragment, null,
+          React.createElement(Navbar, { setCurrentPage: setCurrentPage }),
+          currentPage === 'welcome' && React.createElement(WelcomePage, { onNavigate: () => setCurrentPage('configurator') }),
+          currentPage === 'configurator' && React.createElement(ConfiguratorPage, null)
+        )
       );
     };
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
   </script>
 </body>
 </html>
